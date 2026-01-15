@@ -13,25 +13,64 @@ export const useAuth = () => {
     setErrorMessage("");
 
     try {
-      const response = await api.post("/auth/register", user);
+      const response = await api.post("/users/user/signup", user);
 
       if (response.status === 200 || response.status === 201) {
+        const { accessToken, refreshToken } = response.data;
+
+        // Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        console.log("Tokens saved to localStorage");
         return response.data;
       } else {
         setIsError(true);
-        setErrorMessage(response.data?.message || "Something went wrong");
+        setErrorMessage(response.data?.error || "Something went wrong");
       }
     } catch (error) {
       setIsError(true);
       if (!error.response) {
         setErrorMessage("Please check your network and try again");
       } else {
-        setErrorMessage(error.response.data?.message || "Something went wrong");
+        setErrorMessage(error.response.data?.error || "Something went wrong");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const login = async (user) => {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage("");
+
+    try {
+      const response = await api.post("/users/user/login", user);
+
+      if (response.status === 200 || response.status === 201) {
+        const { accessToken, refreshToken } = response.data;
+
+        // Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        console.log("Tokens saved to localStorage");
+        return response.data;
+      } else {
+        setIsError(true);
+        setErrorMessage(response.data?.error || "Something went wrong");
+      }
+    } catch (error) {
+      setIsError(true);
+      if (!error.response) {
+        setErrorMessage("Please check your network and try again");
+      } else {
+        setErrorMessage(error.response.data?.error || "Something went wrong");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { register, isLoading, isError, errorMessage };
+  return { register, login, isLoading, isError, errorMessage };
 };

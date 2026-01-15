@@ -4,31 +4,44 @@ import Button from "../../shared/components/Button";
 import Input from "../../shared/components/Input";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/hooks/useAuth";
+import { useToast } from "../../shared/components/Toast";
 
 const Register = () => {
-  const { registerCompany, isLoading, isError, errorMessage } = useAuth();
+  const { register, isLoading, isError, errorMessage } = useAuth();
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const [company_name, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone_number, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role] = useState("creator");
+  var [full_name, setFullName] = useState("");
+  const { success, error } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      error("Passwords do not match!");
       return;
     }
-
-    const user = { firstName, lastName, companyName, email, phone, password };
-    const data = await registerCompany(user);
-    if (data) {
-      alert("Registered successfully!");
-      navigate("/"); // redirect to login
+    full_name = firstName + lastName;
+    const user = {
+      full_name,
+      company_name,
+      email,
+      phone_number,
+      password,
+      role,
+    };
+    const data = await register(user);
+    if (isError) {
+      error(errorMessage);
+    } else if (data) {
+      success("Registered successfully!");
+      navigate("/home"); // redirect to login
     }
   };
 
@@ -38,6 +51,7 @@ const Register = () => {
 
     setFirstName("John");
     setLastName("Doe");
+    setFullName("John Doe");
     setCompanyName("Acme Corp");
     setEmail("john.doe@example.com");
     setPhone("1234567890");
@@ -105,7 +119,7 @@ const Register = () => {
 
         <Input
           type='text'
-          value={companyName}
+          value={company_name}
           onChange={(e) => setCompanyName(e.target.value)}
           required
           placeholder='Company Name'
@@ -119,7 +133,7 @@ const Register = () => {
         />
         <Input
           type='tel'
-          value={phone}
+          value={phone_number}
           onChange={(e) => setPhone(e.target.value)}
           required
           placeholder='Phone Number'
@@ -138,8 +152,6 @@ const Register = () => {
           required
           placeholder='Confirm Password'
         />
-
-        {isError && <p style={{ color: "red" }}>{errorMessage}</p>}
 
         <p style={{ textAlign: "center", marginTop: theme.spacing.medium }}>
           Already have an account?{" "}

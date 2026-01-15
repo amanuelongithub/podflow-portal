@@ -3,16 +3,34 @@ import React, { useState } from "react";
 import { theme } from "../../core/theme/theme";
 import Button from "../../shared/components/Button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../shared/hooks/useAuth";
+import { useToast } from "../../shared/components/Toast";
 
 const Login = () => {
+  const { login, isLoading, isError, errorMessage } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { success, error } = useToast();
 
   const navigate = useNavigate(); // hook to navigate programmatically
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Email: ${email}\nPassword: ${password}`);
+    const user = {
+      email,
+      password,
+    };
+    const data = await login(user);
+    if (isError) {
+      error(errorMessage);
+    } else if (data) {
+      success("Login successfully!");
+      navigate("/home"); // redirect to login
+    }
   };
 
   return (
@@ -95,8 +113,8 @@ const Login = () => {
           </span>
         </p>
 
-        <Button color='primary' onClick={handleSubmit}>
-          Login
+        <Button color='primary' type='submit' disabled={isLoading}>
+          {isLoading ? "Loading..." : "Login"}
         </Button>
       </form>
     </div>
