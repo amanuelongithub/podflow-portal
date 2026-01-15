@@ -5,6 +5,7 @@ import Button from "../../shared/components/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/hooks/useAuth";
 import { useToast } from "../../shared/components/Toast";
+import Input from "../../shared/components/Input";
 
 const Login = () => {
   const { login, isLoading, isError, errorMessage } = useAuth();
@@ -69,34 +70,20 @@ const Login = () => {
           Login
         </h2>
 
-        <input
+        <Input
           type='email'
-          placeholder='Email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{
-            width: "100%",
-            padding: theme.spacing.small,
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-          }}
+          placeholder='Email'
         />
 
-        <input
+        <Input
           type='password'
-          placeholder='Password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{
-            width: "100%",
-            padding: theme.spacing.small,
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-            boxSizing: "border-box",
-          }}
+          placeholder='Password'
         />
 
         <p style={{ textAlign: "center", marginTop: theme.spacing.medium }}>
