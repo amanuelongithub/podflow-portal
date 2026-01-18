@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api } from "./api.tsx";
 import { useAuth } from "./auth.tsx";
 import { User } from "../../features/model/user_model.ts";
+import { useNavigate } from "react-router-dom";
 
 export const useUserInfo = () => {
   const { refreshToken } = useAuth();
@@ -10,7 +11,11 @@ export const useUserInfo = () => {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const navigate = useNavigate();
+
   const [users, setUsersData] = useState<User[]>([]);
+  const wait = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -19,16 +24,17 @@ export const useUserInfo = () => {
 
     try {
       // Refresh token if needed and get latest access token
-      const token = await refreshToken();
+      await wait(300);
+      const token = (await refreshToken()) ?? null;
 
       if (!token) {
-        const tokenData = JSON.parse(localStorage.getItem("token") || "{}");
-        const tok = tokenData?.access_token;
-        if (!tok) {
-          setIsError(true);
-          setErrorMessage("No access token available");
-          return;
-        }
+        // const tokenData = JSON.parse(localStorage.getItem("token") || "{}");
+        // const tok = tokenData?.access_token;
+        // if (!tok) {
+        setIsError(true);
+        setErrorMessage("No access token available");
+        return;
+        // }
       }
 
       const response = await api(token).get("/users");

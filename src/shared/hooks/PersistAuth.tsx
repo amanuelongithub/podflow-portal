@@ -1,78 +1,102 @@
+// import { useEffect } from "react";
+// import { useNavigate, Outlet } from "react-router-dom";
+// import { jwtDecode } from "jwt-decode";
+
+// const PersistAuth = () => {
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     let isMounted = true;
+
+//     const checkAuth = async () => {
+//       try {
+//         const tokenJson = localStorage.getItem("token") || "{}";
+//         const tokenObj = JSON.parse(tokenJson!);
+//         const refreshToken = tokenObj.access_token;
+//         // const refreshToken =null;
+
+//         console.log("Perciste auth page");
+//         if (!isMounted) return;
+//         else if (!refreshToken || refreshToken === "{}") {
+//           localStorage.removeItem("token");
+//           navigate("/", { replace: true });
+//           return;
+//         } else if (isTokenExpired(refreshToken)) {
+//           localStorage.removeItem("token");
+//           navigate("/", { replace: true });
+//         }
+//       } catch {
+//         if (!isMounted) return;
+//         localStorage.removeItem("token");
+//         navigate("/", { replace: true });
+//       }
+//     };
+
+//     checkAuth();
+
+//     return () => {
+//       isMounted = false;
+//     };
+//     // Only run once on mount, so empty dependency array
+//   }, [navigate]);
+
+//   const isTokenExpired = (token: string) => {
+//     if (!token) return true;
+//     try {
+//       const decoded: any = jwtDecode(token);
+//       const now = Date.now() / 1000; // current time in seconds
+//       return decoded.exp < now;
+//     } catch (err) {
+//       return true; // if token is invalid, consider it expired
+//     }
+//   };
+//   return <Outlet />;
+// };
+
+// export default PersistAuth;
+
 import { useEffect } from "react";
-import { useLocation, useNavigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../shared/services/auth.tsx";
-
-type JWTPayload = {
-  exp: number;
-  [key: string]: any;
-};
-
-const decodeJWT = (token: string): JWTPayload | null => {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join(""),
-    );
-
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-};
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const PersistAuth = () => {
-  const { refreshToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const tokenJson = await refreshToken();
-
-      if (!tokenJson) return;
-
+    const checkAuth = () => {
       try {
+        const tokenJson = localStorage.getItem("token") || "{}";
         const tokenObj = JSON.parse(tokenJson);
         const accessToken = tokenObj.access_token;
 
-        if (!accessToken) {
-          localStorage.removeItem("token");
-          return;
-        }
+        // Routes that don't need protection
+        const publicPaths = ["/", "/register"];
+        if (publicPaths.includes(location.pathname)) return;
 
-        const payload = decodeJWT(accessToken);
-        if (!payload) {
+        // If no token or token expired → redirect to login
+        if (!accessToken || isTokenExpired(accessToken)) {
           localStorage.removeItem("token");
-          return;
-        }
-
-        const isValid = payload.exp * 1000 > Date.now();
-
-        if (isValid) {
-          if (
-            location.pathname === "/" ||
-            location.pathname === "/login" ||
-            location.pathname === "/register"
-          ) {
-            navigate("/home", { replace: true });
-          }
-        } else {
-          localStorage.removeItem("token");
+          navigate("/", { replace: true });
         }
       } catch {
         localStorage.removeItem("token");
+        navigate("/", { replace: true });
       }
     };
 
     checkAuth();
-  }, [refreshToken, navigate, location.pathname]);
+  }, [navigate, location]);
+
+  const isTokenExpired = (token: string) => {
+    if (!token) return true;
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.exp! < Date.now() / 1000;
+    } catch {
+      return true;
+    }
+  };
 
   return <Outlet />;
 };

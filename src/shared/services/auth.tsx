@@ -81,18 +81,17 @@ export const useAuth = () => {
       const refreshTokenValue = storedToken?.refresh_token;
 
       if (currentAccessToken && !isTokenExpired(currentAccessToken)) {
+        console.log("Token Not Expired ................");
+        console.log(currentAccessToken);
         return currentAccessToken;
       }
+      console.log("Token Expired ................");
 
       if (!refreshTokenValue) {
-        setIsError(true);
-        setErrorMessage("No refresh token available");
         return null;
       }
 
-      const response = await api().post("/users/user/refresh-token", {
-        refresh_token: refreshTokenValue,
-      });
+      const response = await api(refreshTokenValue).post("/users/user/refreshtoken");
 
       if (response.status === 200) {
         const tokenData = response.data.token;

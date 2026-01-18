@@ -12,19 +12,27 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { success, error } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = { email, password };
-    const data = await login(user);
 
-    if (isError) {
-      error(errorMessage);
-    } else if (data) {
-      success("Login successfully!");
-      navigate("/home"); // redirect after login
+    try {
+      const data = await login(user); // <- use whatever login actually returns
+
+      if (!data) {
+        console.log("Login error:", errorMessage);
+        error(errorMessage || "Login failed");
+      } else {
+        success("Login successfully!");
+        navigate("/home");
+      }
+    } catch (err) {
+      console.log("Login exception:", err);
+      error(err.message || "Login failed");
     }
   };
 
@@ -73,10 +81,9 @@ const Login = () => {
         />
 
         <Input
-          type='password'
+          isPassword
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
           placeholder='Password'
         />
 

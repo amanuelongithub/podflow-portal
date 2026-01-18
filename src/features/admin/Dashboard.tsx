@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUserInfo } from "../../shared/services/user.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Table from "../../shared/components/Table.tsx";
@@ -8,20 +9,26 @@ function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { fetchUsers, users, isLoading, isError, errorMessage } = useUserInfo();
   const { error } = useToast();
-
-  const getUsers = async () => {
-    await fetchUsers();
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getUsers();
+    fetchUsers(); // just fetch, don’t check users here
   }, []);
 
   useEffect(() => {
-    if (isError) {
+    if (isError && errorMessage) {
+      if (
+        errorMessage === "Invalid or expired token" ||
+        errorMessage === "No access token available"
+      ) {
+        localStorage.removeItem("token");
+        navigate("/login", { replace: true });
+        return; // ⬅️ important
+      }
+
       error(errorMessage);
     }
-  }, [isError, errorMessage, error]);
+  }, [isError, errorMessage, error, navigate]);
 
   const getRoleName = (roleId: number): string => {
     switch (roleId) {
@@ -34,6 +41,10 @@ function Dashboard() {
       default:
         return `Unknown (${roleId})`;
     }
+  };
+
+  const getUsers = async () => {
+    await fetchUsers();
   };
 
   const userColumns = [
@@ -138,11 +149,12 @@ function Dashboard() {
     },
   ];
 
-  const totalUsers = users.length;
-  const adminUsers = users.filter((u) => u.role_id === 3).length;
-  const creatorUsers = users.filter((u) => u.role_id === 2).length;
-  const regularUsers = users.filter((u) => u.role_id === 1).length;
-  const verifiedUsers = users.filter((u) => u.email_verified).length;
+  // Stats
+  const totalUsers = users?.length ?? 0;
+  const adminUsers = users?.filter((u) => u.role_id === 3).length ?? 0;
+  const creatorUsers = users?.filter((u) => u.role_id === 2).length ?? 0;
+  const regularUsers = users?.filter((u) => u.role_id === 1).length ?? 0;
+  const verifiedUsers = users?.filter((u) => u.email_verified).length ?? 0;
 
   return (
     <div className='flex h-screen bg-gray-50'>
