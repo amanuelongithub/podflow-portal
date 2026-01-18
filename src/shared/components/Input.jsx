@@ -1,7 +1,3 @@
-// src/shared/components/Input.jsx
-import React from "react";
-import { theme } from "../../core/theme/theme";
-
 const Input = (props) => {
   return (
     <input

@@ -3,7 +3,7 @@ import { theme } from "../../core/theme/theme";
 import Button from "../../shared/components/Button";
 import Input from "../../shared/components/Input";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../shared/hooks/useAuth";
+import { useAuth } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast";
 
 const Register = () => {

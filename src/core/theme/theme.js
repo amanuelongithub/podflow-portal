@@ -1,5 +1,3 @@
-// src/core/theme/theme.js
-
 export const theme = {
   colors: {
     primary: "#FF6B00", // Orange
