@@ -11,6 +11,7 @@ export const useUserInfo = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [users, setUsersData] = useState<User[]>([]);
+  
   const wait = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserInfo } from "../../shared/services/user.tsx";
+import { useUserInfo } from "../../shared/services/users.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Table from "../../shared/components/Table.tsx";
+import ProfileCard from "../../shared/components/Profile_Card.tsx";
 import { User } from "../../features/model/user_model.ts";
 
 function Dashboard() {
@@ -209,15 +210,7 @@ function Dashboard() {
           </ul>
         </nav>
 
-        <div className='absolute bottom-0 w-full p-4 border-t'>
-          <div className='flex items-center'>
-            <div className='h-10 w-10 rounded-full bg-gray-300'></div>
-            <div className='ml-3'>
-              <p className='font-medium'>Admin</p>
-              <p className='text-sm text-gray-500'>admin@podflow.com</p>
-            </div>
-          </div>
-        </div>
+        <ProfileCard />
       </div>
 
       {/* Main content */}
