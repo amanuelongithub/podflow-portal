@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { api } from "./api.tsx";
 import { jwtDecode } from "jwt-decode";
+import { loginUrl, refreshUrl, signupUrl } from "../../core/constants/config.js";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +16,7 @@ export const useAuth = () => {
     setErrorMessage("");
 
     try {
-      const response = await api().post("/users/user/signup", user);
+      const response = await api().post(signupUrl, user);
 
       if (response.status === 200 || response.status === 201) {
         const tokenData = response.data.token;
@@ -44,7 +45,7 @@ export const useAuth = () => {
     setErrorMessage("");
 
     try {
-      const response = await api().post("/users/user/login", user);
+      const response = await api().post(loginUrl, user);
 
       console.log("Status code");
       console.log(response.status);
@@ -94,7 +95,7 @@ export const useAuth = () => {
       //   return null;
       // }
 
-      const response = await api(refreshTokenValue).get("/token/refresh");
+      const response = await api(refreshTokenValue).get(refreshUrl);
 
       if (response.status === 200) {
         console.log("---------- Token refreshed successfully ............");

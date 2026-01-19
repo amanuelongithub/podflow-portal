@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api } from "./api.tsx";
 import { useAuth } from "./auth.tsx";
 import { User } from "../../features/model/user_model.ts";
+import { usersUrl } from "../../core/constants/config.js";
 
 export const useUserInfo = () => {
   const { refreshToken } = useAuth();
@@ -30,7 +31,7 @@ export const useUserInfo = () => {
         return;
       }
 
-      const response = await api(token).get("/users");
+      const response = await api(token).get(usersUrl);
 
       if (response.status === 200) {
         const usersArray = response.data.data; // <-- notice the extra .data

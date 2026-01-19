@@ -8,3 +8,4 @@ export const api = (token?: string) =>
       ...(token && { Authorization: token }),
     },
   });
+

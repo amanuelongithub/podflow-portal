@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api } from "./api.tsx";
 import { useAuth } from "./auth.tsx";
 import { User } from "../../features/model/user_model.ts";
+import { profileUrl } from "../../core/constants/config.js";
 
 export const useUserInfo = () => {
   const { refreshToken } = useAuth();
@@ -30,7 +31,7 @@ export const useUserInfo = () => {
         return;
       }
 
-      const response = await api(token).get("/users/user");
+      const response = await api(token).get(profileUrl);
 
       if (response.status === 200) {
         const userData = User.fromMap(response.data.data);
