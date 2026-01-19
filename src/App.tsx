@@ -6,7 +6,7 @@ import Dashboard from "./features/admin/Dashboard.tsx";
 import { ToastProvider } from "./shared/components/Toast";
 import PersistAuth from "./shared/hooks/PersistAuth.tsx";
 import ForgotPassword from "./features/auth/Forgot_Passsword.jsx";
-import NotFound from "./shared/components/NotFount_Page.jsx";
+import NotFound from "./shared/components/Page_Notfound.jsx";
 
 function App() {
   return (
