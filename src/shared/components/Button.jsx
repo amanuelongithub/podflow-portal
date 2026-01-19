@@ -6,7 +6,7 @@ const Button = ({ children, color = "primary", onClick }) => {
       onClick={onClick}
       style={{
         backgroundColor: theme.colors[color],
-        color: theme.colors.textcolor,
+        color: theme.colors.surface,
         padding: theme.spacing.medium,
         border: "none",
         borderRadius: theme.spacing.small,

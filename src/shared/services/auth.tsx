@@ -77,27 +77,34 @@ export const useAuth = () => {
 
     try {
       const storedToken = JSON.parse(localStorage.getItem("token") || "{}");
+
       const currentAccessToken = storedToken?.access_token;
       const refreshTokenValue = storedToken?.refresh_token;
 
       if (currentAccessToken && !isTokenExpired(currentAccessToken)) {
         console.log("Token Not Expired ................");
-        console.log(currentAccessToken);
+        // console.log(currentAccessToken);
+        console.log("RefreshToken ........." + refreshTokenValue);
         return currentAccessToken;
       }
+      console.log("RefreshToken2 ........." + refreshTokenValue);
       console.log("Token Expired ................");
 
-      if (!refreshTokenValue) {
-        return null;
-      }
+      // if (!refreshTokenValue) {
+      //   return null;
+      // }
 
-      const response = await api(refreshTokenValue).post("/users/user/refreshtoken");
+      const response = await api(refreshTokenValue).get("/token/refresh");
 
       if (response.status === 200) {
-        const tokenData = response.data.token;
-        localStorage.setItem("token", JSON.stringify(tokenData));
-        const newToken = tokenData.access_token;
-        return newToken;
+        console.log("---------- Token refreshed successfully ............");
+        const { access_token, refresh_token } = response.data;
+        console.log("Access Token XXXXXXX" + access_token);
+        localStorage.setItem(
+          "token",
+          JSON.stringify({ access_token, refresh_token }),
+        );
+        return access_token;
       } else {
         setIsError(true);
         setErrorMessage(response.data?.error || "Failed to refresh");

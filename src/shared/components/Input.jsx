@@ -7,6 +7,7 @@ const Input = ({ isPassword, ...props }) => {
   if (!isPassword) {
     return (
       <input
+      
         {...props}
         className={`
           w-full
@@ -49,6 +50,7 @@ const Input = ({ isPassword, ...props }) => {
           disabled:bg-gray-100
           disabled:cursor-not-allowed
         `}
+        autoComplete="off"
       />
       <span
         className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"

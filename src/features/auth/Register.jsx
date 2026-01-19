@@ -153,6 +153,13 @@ const Register = () => {
           placeholder='Confirm Password'
         />
 
+        <div style={{ display: "flex", flexDirection: "row", gap: "16px" }}>
+          <Button color='primary' type='submit' disabled={isLoading}>
+            {isLoading ? "Loading..." : "Create Account"}
+          </Button>
+
+        </div>
+
         <p style={{ textAlign: "center", marginTop: theme.spacing.medium }}>
           Already have an account?{" "}
           <span
@@ -166,19 +173,6 @@ const Register = () => {
             Login
           </span>
         </p>
-        <div style={{ display: "flex", flexDirection: "row", gap: "16px" }}>
-          <Button color='primary' type='submit' disabled={isLoading}>
-            {isLoading ? "Loading..." : "Register"}
-          </Button>
-          <Button
-            color='secondary'
-            type='button'
-            onClick={handleAutoFill}
-            disabled={isLoading}
-          >
-            Auto Fill
-          </Button>
-        </div>
       </form>
     </div>
   );

@@ -5,7 +5,7 @@ export const theme = {
     background: "#F5F5F5", // Light gray background
     surface: "#FFFFFF", // Cards / panels
     accent: "#FFA347", // Lighter orange for hover / highlights
-    textcolor: "#f9f9f9ff", // Lighter orange for hover / highlights
+    textcolor: "#7B7B7B", // Lighter orange for hover / highlights
   },
   typography: {
     fontFamily: `'Poppins', sans-serif`,

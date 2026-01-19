@@ -1,4 +1,3 @@
-// src/features/auth/Login.tsx
 import React, { useState } from "react";
 import { theme } from "../../core/theme/theme.js";
 import Button from "../../shared/components/Button.jsx";
@@ -6,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Input from "../../shared/components/Input.jsx";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
-const Login = () => {
+const ForgotPassword = () => {
   const { login, isLoading, errorMessage } = useAuth();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password] = useState("");
   const { success, error } = useToast();
 
   const navigate = useNavigate();
@@ -66,9 +66,19 @@ const Login = () => {
             color: theme.colors.primary,
             margin: 0,
             textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing.small,
           }}
         >
-          Login
+          <button
+            onClick={() => navigate(-1)}
+            className='w-10 h-10 rounded-full flex items-center justify-center
+             border border-gray-100 hover:bg-gray-100 transition'
+          >
+            <IoIosArrowRoundBack size={24} />
+          </button>
+          Forgot Password 
         </h2>
 
         <Input
@@ -79,47 +89,14 @@ const Login = () => {
           placeholder='Email'
         />
 
-        <Input
-          isPassword
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder='Password'
-        />
-
-        <div style={{ textAlign: "right" }}>
-          <span
-            style={{
-              display: "inline-block", 
-              color: theme.colors.textcolor,
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-            onClick={() => navigate("/forgotpassword")}
-          >
-            Forgot Password?
-          </span>
-        </div>
+        <div style={{ marginTop: theme.spacing.medium }}></div>
 
         <Button color='primary' type='submit' disabled={isLoading}>
-          {isLoading ? "Loading..." : "Login"}
+          {isLoading ? "Loading..." : "Continue"}
         </Button>
-
-        <p style={{ textAlign: "center", marginTop: theme.spacing.medium }}>
-          Don’t have an account?{" "}
-          <span
-            style={{
-              color: theme.colors.primary,
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </span>
-        </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default ForgotPassword;
