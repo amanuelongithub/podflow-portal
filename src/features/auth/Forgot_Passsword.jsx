@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { theme } from "../../core/theme/theme.js";
-import Button from "../../shared/components/Button.jsx";
+import { theme } from "../../core/theme.js";
+import Button from "../../shared/components/Button.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
-import Input from "../../shared/components/Input.jsx";
+import Input from "../../shared/components/Input.tsx";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { homeRoute } from  "../../core/routes.ts";
 
 const ForgotPassword = () => {
   const { login, isLoading, errorMessage } = useAuth();
@@ -27,7 +28,7 @@ const ForgotPassword = () => {
         error(errorMessage || "Login failed");
       } else {
         success("Login successfully!");
-        navigate("/home");
+        navigate(homeRoute);
       }
     } catch (err) {
       console.log("Login exception:", err);
@@ -78,7 +79,7 @@ const ForgotPassword = () => {
           >
             <IoIosArrowRoundBack size={24} />
           </button>
-          Forgot Password 
+          Forgot Password
         </h2>
 
         <Input

@@ -1,13 +1,44 @@
 import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-const Input = ({ isPassword, ...props }) => {
+// Define the props interface
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  isPassword?: boolean;
+  readOnly?: boolean;
+}
+
+const Input: React.FC<InputProps> = ({ isPassword, readOnly, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  // Read-only version
+  if (readOnly) {
+    return (
+      <div className="relative w-full">
+        <input
+          readOnly
+          {...props}
+          className={`
+            w-full
+            h-11
+            px-4 py-3
+            rounded-lg
+            border border-gray-300
+            bg-gray-50
+            text-gray-700
+            cursor-not-allowed
+            ${props.className || ""}
+          `}
+        />
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+          Read only
+        </div>
+      </div>
+    );
+  }
 
   if (!isPassword) {
     return (
       <input
-      
         {...props}
         className={`
           w-full

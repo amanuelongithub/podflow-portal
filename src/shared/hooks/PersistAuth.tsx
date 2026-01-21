@@ -1,6 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import {
+  adminRoute,
+  creatorRoute,
+  forgotpasswordRoute,
+  homeRoute,
+  loginRoute,
+  registerRoute,
+  unAuthorizedRoute,
+} from "../../core/routes.ts";
 
 const PersistAuth = () => {
   const navigate = useNavigate();
@@ -13,25 +22,38 @@ const PersistAuth = () => {
         const tokenObj = tokenJson ? JSON.parse(tokenJson) : null;
         const refreshToken = tokenObj?.refresh_token;
 
-        const publicPaths = ["/", "/login", "/register","/forgotpassword"];
+        const publicPaths = [
+          homeRoute,
+          loginRoute,
+          registerRoute,
+          forgotpasswordRoute,
+        ];
 
-        // ✅ logged in & token valid
+        // logged in & token valid
         if (refreshToken && !isTokenExpired(refreshToken)) {
           if (publicPaths.includes(location.pathname)) {
-            navigate("/home", { replace: true });
+            const role = userRole(refreshToken);
+            console.log("User role detected:", role);
+            if (role === "admin") {
+              navigate(adminRoute, { replace: true });
+            } else if (role === "creator") {
+              navigate(creatorRoute, { replace: true });
+            } else {
+              navigate(unAuthorizedRoute, { replace: true });
+            }
           }
           return;
         }
 
-        // ✅ allow public pages when NOT logged in
+        // allow public pages when NOT logged in
         if (publicPaths.includes(location.pathname)) return;
 
-        // ❌ not logged in & protected route
+        // not logged in & protected route
         localStorage.removeItem("token");
-        navigate("/", { replace: true });
+        navigate(homeRoute, { replace: true });
       } catch {
         localStorage.removeItem("token");
-        navigate("/", { replace: true });
+        navigate(homeRoute, { replace: true });
       }
     };
 
@@ -47,7 +69,15 @@ const PersistAuth = () => {
     }
   };
 
+  const userRole = (token: string) => {
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.role;
+    } catch {
+      return null;
+    }
+  };
+
   return <Outlet />;
 };
-
 export default PersistAuth;

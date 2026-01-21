@@ -1,12 +1,19 @@
 // src/features/auth/Login.tsx
 import React, { useState } from "react";
-import { theme } from "../../core/theme/theme.js";
-import Button from "../../shared/components/Button.jsx";
+import { theme } from "../../core/theme.js";
+import Button from "../../shared/components/Button.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
-import Input from "../../shared/components/Input.jsx";
-
+import Input from "../../shared/components/Input.tsx";
+import { jwtDecode } from "jwt-decode";
+import {
+  homeRoute,
+  creatorRoute,
+  forgotpasswordRoute,
+  registerRoute,
+  unAuthorizedRoute,
+} from "../../core/routes.ts";
 const Login = () => {
   const { login, isLoading, errorMessage } = useAuth();
   const [email, setEmail] = useState("");
@@ -26,12 +33,29 @@ const Login = () => {
         console.log("Login error:", errorMessage);
         error(errorMessage || "Login failed");
       } else {
-        success("Login successfully!");
-        navigate("/home");
+        const role = userRole(data.access_token);
+        if (role === "admin") {
+          success("Login successfully!");
+          navigate(homeRoute);
+        } else if (role === "creator") {
+          success("Login successfully!");
+          navigate(creatorRoute, { replace: true });
+        } else {
+          error("Unauthorized!");
+          navigate(unAuthorizedRoute, { replace: true });
+        }
       }
     } catch (err) {
-      console.log("Login exception:", err);
       error(err.message || "Login failed");
+    }
+  };
+
+  const userRole = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.role;
+    } catch {
+      return null;
     }
   };
 
@@ -89,12 +113,12 @@ const Login = () => {
         <div style={{ textAlign: "right" }}>
           <span
             style={{
-              display: "inline-block", 
+              display: "inline-block",
               color: theme.colors.textcolor,
               cursor: "pointer",
               textDecoration: "underline",
             }}
-            onClick={() => navigate("/forgotpassword")}
+            onClick={() => navigate(forgotpasswordRoute)}
           >
             Forgot Password?
           </span>
@@ -112,7 +136,7 @@ const Login = () => {
               cursor: "pointer",
               textDecoration: "underline",
             }}
-            onClick={() => navigate("/register")}
+            onClick={() => navigate(registerRoute)}
           >
             Register
           </span>

@@ -4,7 +4,7 @@ export const theme = {
     secondary: "#1F1F1F", // Dark gray for text
     background: "#F5F5F5", // Light gray background
     surface: "#FFFFFF", // Cards / panels
-    accent: "#FFA347", // Lighter orange for hover / highlights
+    accent: "rgba(255, 107, 0, 0.1)", // Lighter orange for hover / highlights
     textcolor: "#7B7B7B", // Lighter orange for hover / highlights
   },
   typography: {

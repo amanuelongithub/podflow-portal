@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { theme } from "../../core/theme/theme";
-import Button from "../../shared/components/Button";
-import Input from "../../shared/components/Input";
+import { theme } from "../../core/theme.js";
+import Button from "../../shared/components/Button.tsx";
+import Input from "../../shared/components/Input.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast";
+import { homeRoute, loginRoute } from "../../core/routes.ts";
 
 const Register = () => {
   const { register, isLoading, isError, errorMessage } = useAuth();
@@ -41,23 +42,23 @@ const Register = () => {
       error(errorMessage);
     } else if (data) {
       success("Registered successfully!");
-      navigate("/home"); // redirect to login
+      navigate(homeRoute); 
     }
   };
 
-  const handleAutoFill = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // const handleAutoFill = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
 
-    setFirstName("John");
-    setLastName("Doe");
-    setFullName("John Doe");
-    setCompanyName("Acme Corp");
-    setEmail("john.doe@example.com");
-    setPhone("1234567890");
-    setPassword("password123");
-    setConfirmPassword("password123");
-  };
+  //   setFirstName("John");
+  //   setLastName("Doe");
+  //   setFullName("John Doe");
+  //   setCompanyName("Acme Corp");
+  //   setEmail("john.doe@example.com");
+  //   setPhone("1234567890");
+  //   setPassword("password123");
+  //   setConfirmPassword("password123");
+  // };
 
   return (
     <div
@@ -157,7 +158,6 @@ const Register = () => {
           <Button color='primary' type='submit' disabled={isLoading}>
             {isLoading ? "Loading..." : "Create Account"}
           </Button>
-
         </div>
 
         <p style={{ textAlign: "center", marginTop: theme.spacing.medium }}>
@@ -168,7 +168,7 @@ const Register = () => {
               cursor: "pointer",
               textDecoration: "underline",
             }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate(loginRoute)}
           >
             Login
           </span>

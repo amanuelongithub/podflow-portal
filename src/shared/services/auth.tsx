@@ -3,7 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { api } from "./api.tsx";
 import { jwtDecode } from "jwt-decode";
-import { loginUrl, refreshUrl, signupUrl } from "../../core/constants/config.js";
+import { loginUrl, refreshUrl, signupUrl } from "../../core/config.ts";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +53,7 @@ export const useAuth = () => {
       if (response.status === 200 || response.status === 201) {
         const tokenData = response.data.token;
         localStorage.setItem("token", JSON.stringify(tokenData));
-        console.log("Token object saved to localStorage:", tokenData);
-        return response.data;
+        return tokenData;
       } else {
         setIsError(true);
         setErrorMessage(response.data?.error || "Something went wrong");

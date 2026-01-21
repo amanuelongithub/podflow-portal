@@ -1,7 +1,7 @@
 const baseUrl = "http://localhost:8080/api";
 
-const signupUrl = baseUrl + "/users/user/signup";
-const loginUrl = baseUrl + "/users/user/login";
+const signupUrl = baseUrl + "/signup";
+const loginUrl = baseUrl + "/login";
 const refreshUrl = baseUrl + "/token/refresh";
 const profileUrl = baseUrl + "/users/user";
 const usersUrl = baseUrl + "/users";

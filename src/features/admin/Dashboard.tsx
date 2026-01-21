@@ -6,9 +6,12 @@ import Table from "../../shared/components/Table.tsx";
 import ProfileCard from "../../shared/components/Profile_Card.tsx";
 import { User } from "../../features/model/user_model.ts";
 
+import { loginRoute, unAuthorizedRoute } from "../../core/routes.ts";
+
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { fetchUsers, users, isLoading, isError, errorMessage } = useUserInfo();
+  const { fetchUsers, users, isLoading, isError, unAuthorized, errorMessage } =
+    useUserInfo();
   const { error } = useToast();
   const navigate = useNavigate();
 
@@ -19,18 +22,22 @@ function Dashboard() {
 
   useEffect(() => {
     if (isError && errorMessage) {
+      console.log("is Error:", isError);
+      console.log("Error Message:", errorMessage);
+
       if (
         errorMessage === "Invalid or expired token" ||
         errorMessage === "No access token available"
       ) {
         localStorage.removeItem("token");
-        navigate("/login", { replace: true });
-        return; // ⬅️ important
+        navigate(loginRoute, { replace: true });
+        return;
       }
-
       error(errorMessage);
+    } else if (unAuthorized) {
+      navigate(unAuthorizedRoute, { replace: true });
     }
-  }, [isError, errorMessage, error, navigate]);
+  }, [isError, unAuthorized, errorMessage, error, navigate]);
 
   const getRoleName = (roleId: number): string => {
     switch (roleId) {
@@ -254,7 +261,6 @@ function Dashboard() {
                   />
                 </svg>
               </button>
-              <div className='h-8 w-8 rounded-full bg-gray-300'></div>
             </div>
           </div>
         </header>

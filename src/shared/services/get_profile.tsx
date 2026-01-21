@@ -3,7 +3,7 @@ import { useState } from "react";
 import { api } from "./api.tsx";
 import { useAuth } from "./auth.tsx";
 import { User } from "../../features/model/user_model.ts";
-import { profileUrl } from "../../core/constants/config.js";
+import { profileUrl } from "../../core/config.ts";
 
 export const useUserInfo = () => {
   const { refreshToken } = useAuth();
