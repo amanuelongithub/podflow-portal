@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserInfo } from "../../shared/services/users.tsx";
+import { useUserStore } from "../../shared/services/users.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Table from "../../shared/components/Table.tsx";
-import { User } from "../../features/model/user_model.ts";
+import { User } from "../model/users_model.ts";
 import Sidebar from "./components/Sidebar.tsx";
 import { theme } from "../../core/theme.js";
 import EditProfile from "../../shared/components/Edit_Profile.tsx";
@@ -35,7 +35,7 @@ function CreatorDashboard() {
     },
   ];
 
-  const { fetchUsers, users, isLoading, isError, errorMessage } = useUserInfo();
+  const { fetchUsers, users, isLoading, isError, errorMessage } = useUserStore();
   const { error } = useToast();
   const navigate = useNavigate();
 

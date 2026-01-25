@@ -1,72 +1,93 @@
 import axios from "axios";
-import { useState } from "react";
+import { create } from "zustand";
 import { api } from "./api.tsx";
-import { useAuth } from "./auth.tsx";
-import { User } from "../../features/model/user_model.ts";
+import { useAuthStore } from "./auth.tsx";
+import { UserResponse } from "../../features/model/users_model.ts";
 import { usersUrl } from "../../core/config.ts";
 
-export const useUserInfo = () => {
-  const { refreshToken } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [unAuthorized, setIsUnAuthorized] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+interface UserState {
+  users?: UserResponse;
+  isLoading: boolean;
+  isError: boolean;
+  unAuthorized: boolean;
+  errorMessage: string;
+  fetchUsers: () => Promise<void>;
+}
 
-  const [users, setUsersData] = useState<User[]>([]);
+export const useUserStore = create<UserState>((set) => ({
+  users: undefined,
+  isLoading: false,
+  isError: false,
+  unAuthorized: false,
+  errorMessage: "",
 
-  const wait = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-
-  const fetchUsers = async () => {
-    setIsLoading(true);
-    setIsError(false);
-    setIsUnAuthorized(false);
-    setErrorMessage("");
+  fetchUsers: async () => {
+    set({
+      isLoading: true,
+      isError: false,
+      unAuthorized: false,
+      errorMessage: "",
+    });
 
     try {
-      await wait(300);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const { refreshToken } = useAuthStore.getState();
+
       const token = (await refreshToken()) ?? null;
 
       if (!token) {
-        setIsError(true);
-        setErrorMessage("No access token available");
+        set({
+          unAuthorized: true,
+          errorMessage: "No access token available",
+          isLoading: false,
+        });
         return;
       }
 
       const response = await api(token).get(usersUrl);
-      console.log("status code from users data " + response.data);
 
       if (response.status === 200) {
-        const usersArray = response.data.data; // <-- notice the extra .data
-        const usersData = usersArray.map((user: any) => User.fromMap(user));
-        setUsersData(usersData);
+        const userResponse = UserResponse.fromRawJson(response.data);
+        set({
+          users: userResponse,
+          isLoading: false,
+        });
       } else if (response.status === 401) {
-        setIsUnAuthorized(true);
-        setErrorMessage(response.data?.error);
+        set({
+          unAuthorized: true,
+          errorMessage: "Unauthorized access",
+          isLoading: false,
+        });
       } else {
-        // setIsError(true);
-        // setErrorMessage(response.data?.error || "Something went wrong");
+        set({
+          isError: true,
+          errorMessage: response.data?.message || "Something went wrong",
+          isLoading: false,
+        });
       }
     } catch (error: unknown) {
+      let errorMsg = "Network error";
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          setIsUnAuthorized(true);
-          setErrorMessage("Unauthorized");
-        } else {
-          setIsError(true);
-          setErrorMessage(error.response?.data?.error || "Request failed");
+          set({
+            unAuthorized: true,
+            errorMessage: "Unauthorized",
+            isLoading: false,
+          });
+          return;
         }
+        errorMsg = error.response?.data?.error || "Request failed";
       } else if (error instanceof Error) {
-        setIsError(true);
-        setErrorMessage(error.message);
-      } else {
-        setIsError(true);
-        setErrorMessage("Network error");
+        errorMsg = error.message;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  return { fetchUsers, users, isLoading, isError, unAuthorized, errorMessage };
-};
+      set({
+        isError: true,
+        errorMessage: errorMsg,
+        isLoading: false,
+      });
+    }
+  },
+}));

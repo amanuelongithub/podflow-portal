@@ -1,21 +1,21 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserInfo } from "../../shared/services/get_profile.tsx";
+import { useUserProfile } from "../services/profile.tsx";
 import { IoMdMore } from "react-icons/io";
 import { FiLogOut, FiUser } from "react-icons/fi";
-import { editprofileRoute, loginRoute } from "../../core/routes.ts";
+import { loginRoute } from "../../core/routes.ts";
+import { imageUrl } from "../../core/config.ts";
 
 type ProfileCardProps = {
-  title?: string;
   onPress?: () => void;
 };
 
-const ProfileCard = ({ title = "My Account", onPress }: ProfileCardProps) => {
+const ProfileCard = ({ onPress }: ProfileCardProps) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { fetchUserProfile, profile, isLoading, isError, errorMessage } =
-    useUserInfo();
+    useUserProfile();
 
   // close menu when clicking outside
   useEffect(() => {
@@ -81,7 +81,7 @@ const ProfileCard = ({ title = "My Account", onPress }: ProfileCardProps) => {
           onClick={onPress}
         >
           <img
-            src={profile.profile_image!}
+            src={imageUrl + profile.profile_image?.image_medium_path}
             alt='Profile'
             className='h-10 w-10 rounded-full object-cover flex-shrink-0'
             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -92,10 +92,8 @@ const ProfileCard = ({ title = "My Account", onPress }: ProfileCardProps) => {
             }}
           />
           <div className='ml-3 min-w-0'>
-            <p className='font-medium text-sm truncate'>{title}</p>
-            <p className='text-xs text-gray-500 truncate'>
-              {profile.full_name}
-            </p>
+            <p className='font-medium text-sm truncate'>{profile.full_name}</p>
+            <p className='text-xs text-gray-500 truncate'>{profile.email}</p>
           </div>
         </div>
 

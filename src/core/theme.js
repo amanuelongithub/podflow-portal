@@ -15,6 +15,13 @@ export const theme = {
     body: {
       fontWeight: 400,
     },
+    fontSizes: {
+      xsmalle: "13px",
+      small: "14px",
+      medium: "16px",
+      large: "20px",
+      xlarge: "24px",
+    },
   },
   spacing: {
     small: "8px",

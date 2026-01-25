@@ -3,19 +3,19 @@ import React, { useState } from "react";
 import { theme } from "../../core/theme.js";
 import Button from "../../shared/components/Button.tsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../shared/services/auth.tsx";
+import { useAuthStore } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Input from "../../shared/components/Input.tsx";
 import { jwtDecode } from "jwt-decode";
 import {
-  homeRoute,
+  adminRoute,
   creatorRoute,
   forgotpasswordRoute,
   registerRoute,
   unAuthorizedRoute,
 } from "../../core/routes.ts";
 const Login = () => {
-  const { login, isLoading, errorMessage } = useAuth();
+  const { login, isLoading, errorMessage } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { success, error } = useToast();
@@ -31,12 +31,13 @@ const Login = () => {
 
       if (!data) {
         console.log("Login error:", errorMessage);
+        console.log("token error:", data);
         error(errorMessage || "Login failed");
       } else {
         const role = userRole(data.access_token);
         if (role === "admin") {
           success("Login successfully!");
-          navigate(homeRoute);
+          navigate(adminRoute);
         } else if (role === "creator") {
           success("Login successfully!");
           navigate(creatorRoute, { replace: true });

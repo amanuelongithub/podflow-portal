@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { theme } from "../../core/theme.js";
 import Button from "../../shared/components/Button.tsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../shared/services/auth.tsx";
+import { useAuthStore } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Input from "../../shared/components/Input.tsx";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { homeRoute } from  "../../core/routes.ts";
 
 const ForgotPassword = () => {
-  const { login, isLoading, errorMessage } = useAuth();
+  const { login, isLoading, errorMessage } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password] = useState("");
   const { success, error } = useToast();

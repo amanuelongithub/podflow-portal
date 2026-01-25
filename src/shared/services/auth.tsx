@@ -1,19 +1,26 @@
-// src/shared/hooks/useAuth.js
+import { create } from "zustand";
 import axios from "axios";
-import { useState } from "react";
 import { api } from "./api.tsx";
 import { jwtDecode } from "jwt-decode";
 import { loginUrl, refreshUrl, signupUrl } from "../../core/config.ts";
 
-export const useAuth = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+interface AuthState {
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string;
+  register: (user: Record<string, any>) => Promise<any>;
+  login: (user: Record<string, any>) => Promise<string | undefined>;
+  refreshToken: () => Promise<string | null>;
+  isTokenExpired: (token: string) => boolean;
+}
 
-  const register = async (user: Record<string, any>) => {
-    setIsLoading(true);
-    setIsError(false);
-    setErrorMessage("");
+export const useAuthStore = create<AuthState>((set, get) => ({
+  isLoading: false,
+  isError: false,
+  errorMessage: "",
+
+  register: async (user) => {
+    set({ isLoading: true, isError: false, errorMessage: "" });
 
     try {
       const response = await api().post(signupUrl, user);
@@ -21,123 +28,101 @@ export const useAuth = () => {
       if (response.status === 200 || response.status === 201) {
         const tokenData = response.data.token;
         localStorage.setItem("token", JSON.stringify(tokenData));
-        console.log("Token object saved to localStorage:", tokenData);
         return response.data;
       } else {
-        setIsError(true);
-        setErrorMessage(response.data?.error || "Something went wrong");
+        set({
+          isError: true,
+          errorMessage: response.data?.error || "Something went wrong",
+        });
       }
     } catch (error) {
-      setIsError(true);
-
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(error.response?.data?.error || "Something went wrong");
-      } else {
-        setErrorMessage("Please check your network and try again");
-      }
+      set({
+        isError: true,
+        errorMessage: axios.isAxiosError(error)
+          ? error.response?.data?.error || "Something went wrong"
+          : "Network error",
+      });
     } finally {
-      setIsLoading(false);
+      set({ isLoading: false });
     }
-  };
-  const login = async (user: Record<string, any>) => {
-    setIsLoading(true);
-    setIsError(false);
-    setErrorMessage("");
+  },
+
+  login: async (user) => {
+    set({ isLoading: true, isError: false, errorMessage: "" });
 
     try {
       const response = await api().post(loginUrl, user);
 
-      console.log("Status code");
-      console.log(response.status);
-
-      if (response.status === 200 || response.status === 201) {
+      // console.log("Login response data:", response.);
+      if (response.status === 200) {
         const tokenData = response.data.token;
         localStorage.setItem("token", JSON.stringify(tokenData));
         return tokenData;
       } else {
-        setIsError(true);
-        setErrorMessage(response.data?.error || "Something went wrong");
+        set({
+          isError: true,
+          errorMessage: response.data?.error || "Something went wrong",
+        });
       }
     } catch (error) {
-      setIsError(true);
-
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(error.response?.data?.error || "Something went wrong");
-      } else {
-        setErrorMessage("Please check your network and try again");
-      }
+      set({
+        isError: true,
+        errorMessage: axios.isAxiosError(error)
+          ? error.response?.data?.error || "Something went wrong"
+          : "Network error",
+      });
     } finally {
-      setIsLoading(false);
+      set({ isLoading: false });
     }
-  };
+  },
 
-  const refreshToken = async () => {
-    setIsError(false);
-    setErrorMessage("");
+  refreshToken: async () => {
+    set({ isError: false, errorMessage: "" });
 
     try {
       const storedToken = JSON.parse(localStorage.getItem("token") || "{}");
-
       const currentAccessToken = storedToken?.access_token;
       const refreshTokenValue = storedToken?.refresh_token;
 
-      if (currentAccessToken && !isTokenExpired(currentAccessToken)) {
-        console.log("Token Not Expired ................");
-        // console.log(currentAccessToken);
-        console.log("RefreshToken ........." + refreshTokenValue);
+      if (currentAccessToken && !get().isTokenExpired(currentAccessToken)) {
         return currentAccessToken;
       }
-      console.log("RefreshToken2 ........." + refreshTokenValue);
-      console.log("Token Expired ................");
-
-      // if (!refreshTokenValue) {
-      //   return null;
-      // }
 
       const response = await api(refreshTokenValue).get(refreshUrl);
 
       if (response.status === 200) {
-        console.log("---------- Token refreshed successfully ............");
         const { access_token, refresh_token } = response.data;
-        console.log("Access Token XXXXXXX" + access_token);
         localStorage.setItem(
           "token",
           JSON.stringify({ access_token, refresh_token }),
         );
         return access_token;
       } else {
-        setIsError(true);
-        setErrorMessage(response.data?.error || "Failed to refresh");
+        set({
+          isError: true,
+          errorMessage: response.data?.error || "Failed to refresh",
+        });
         return null;
       }
     } catch (error) {
-      setIsError(true);
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(error.response?.data?.error || "Refresh failed");
-      } else {
-        setErrorMessage("Network error");
-      }
+      set({
+        isError: true,
+        errorMessage: axios.isAxiosError(error)
+          ? error.response?.data?.error || "Refresh failed"
+          : "Network error",
+      });
       return null;
     }
-  };
+  },
 
-  const isTokenExpired = (token: string) => {
+  isTokenExpired: (token: string) => {
     if (!token) return true;
     try {
       const decoded: any = jwtDecode(token);
-      const now = Date.now() / 1000; // current time in seconds
+      const now = Date.now() / 1000;
       return decoded.exp < now;
-    } catch (err) {
-      return true; // if token is invalid, consider it expired
+    } catch {
+      return true;
     }
-  };
-
-  return {
-    register,
-    login,
-    refreshToken,
-    isLoading,
-    isError,
-    errorMessage,
-  };
-};
+  },
+}));

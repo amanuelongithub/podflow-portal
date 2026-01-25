@@ -1,27 +1,78 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect, useRef } from "react";
 import Input from "./Input.tsx";
+import { useUserProfile } from "../services/profile.tsx";
+import { loginRoute } from "../../core/routes.ts";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "./Toast.js";
+import { imageUrl } from "../../core/config.ts";
+import WarningModal from "./custom_modal.tsx";
 
-// Define form data type
 interface FormData {
-  fullName: string;
-  email: string;
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
+  full_name: string;
+  company_name: string;
+  phone_number: string;
+  bio?: string;
+  profile_image?: File | null;
+}
+
+interface User {
+  full_name: string;
+  company_name: string;
+  phone_number: string;
+  bio?: string;
+  profile_image?: File | null;
 }
 
 const EditProfile = () => {
+  const { fetchUserProfile, profile, isError, errorMessage, editUserProfile } =
+    useUserProfile();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
-    fullName: "John Doe",
-    email: "john.doe@example.com",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    full_name: "",
+    company_name: "",
+    phone_number: "",
+    bio: "",
   });
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { success, error } = useToast();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!profile) {
+      fetchUserProfile();
+    }
+    if (profile) {
+      setFormData({
+        full_name: profile?.full_name || "",
+        company_name: profile?.company_name || "",
+        phone_number: profile?.phone_number || "",
+        bio: profile?.bio || "",
+      });
+      if (profile?.profile_image?.image_medium_path) {
+        setProfileImagePreview(profile.profile_image.image_medium_path);
+      }
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (
+      isError &&
+      (errorMessage === "Invalid or expired token" ||
+        errorMessage === "No access token available")
+    ) {
+      localStorage.removeItem("token");
+      navigate(loginRoute, { replace: true });
+    }
+  }, [isError, errorMessage, navigate]);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -29,62 +80,152 @@ const EditProfile = () => {
     }));
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfileImage(file);
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setProfileImagePreview(previewUrl);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Prepare user object for EditUserProfile method
+      const userToUpdate: User = {
+        full_name: formData.full_name,
+        company_name: formData.company_name,
+        phone_number: formData.phone_number,
+        bio: formData.bio || "",
+        profile_image: profileImage,
+      };
 
-    console.log("Updated data:", formData);
-    setLoading(false);
-    setIsEditing(false);
-    alert("Profile updated successfully!");
+      // Call your EditUserProfile method
+      await editUserProfile(userToUpdate);
+
+      if (profile) {
+        setFormData({
+          full_name: profile.full_name || "",
+          company_name: profile.company_name || "",
+          phone_number: profile.phone_number || "",
+          bio: profile.bio || "",
+        });
+
+        // Clear the file input
+        setProfileImage(null);
+        if (profileImagePreview) {
+          URL.revokeObjectURL(profileImagePreview);
+          setProfileImagePreview("");
+        }
+      }
+
+      setLoading(false);
+      setIsEditing(false);
+      success("Profile updated successfully!");
+    } catch (er) {
+      console.error("Update failed:", er);
+      setLoading(false);
+      error("Failed to update profile. Please try again.");
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setFormData({
-      fullName: "John Doe",
-      email: "john.doe@example.com",
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    if (profile) {
+      setFormData({
+        full_name: profile?.full_name || "",
+        company_name: profile?.company_name || "",
+        phone_number: profile?.phone_number || "",
+        bio: profile?.bio || "",
+      });
+      setProfileImage(null);
+      if (profile?.profile_image?.image_medium_path) {
+        setProfileImagePreview(profile.profile_image.image_medium_path);
+      } else {
+        setProfileImagePreview("");
+      }
+    }
   };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  function setShowDeleteModal(arg0: boolean): void {
+    <WarningModal
+      isOpen={true}
+      onClose={() => {}}
+      onConfirm={() => {}}
+      title='Delete Account'
+      message='Are you sure you want to delete your account? This action cannot be undone.'
+      confirmText='Delete Account'
+      cancelText='Cancel'
+      isLoading={false}
+    />;
+  }
 
   return (
     <div className='min-h-screen py-8 px-4 font-poppins'>
       <div className='max-w-2xl mx-auto'>
-        {/* Header */}
-        {/* <div className='mb-8'>
-          <h1 className='text-3xl font-bold text-[#1F1F1F] mb-2'>
-            Edit Profile
-          </h1>
-          <p className='text-[#7B7B7B]'>
-            Manage your personal information and email preferences
-          </p>
-        </div> */}
-
-        {/* Profile Card */}
         <div className='bg-[#FFFFFF] rounded-2xl shadow-sm p-6 md:p-8'>
           <form onSubmit={handleSubmit}>
-            {/* Profile Picture Section */}
+            {/* Profile Picture Section - UPDATED */}
             <div className='flex items-center gap-6 mb-8 pb-8 border-b border-gray-100'>
               <div className='relative'>
-                <div className='w-20 h-20 rounded-full bg-[rgba(255,107,0,0.1)] flex items-center justify-center text-3xl font-semibold text-[#FF6B00]'>
-                  {formData.fullName.charAt(0)}
+                <div className='w-20 h-20 rounded-full overflow-hidden bg-[rgba(255,107,0,0.1)] flex items-center justify-center'>
+                  {profileImage || profile?.profile_image?.image_medium_path ? (
+                    profileImage ? (
+                      <img
+                        src={profileImagePreview}
+                        alt='Profile'
+                        className='w-full h-full object-cover'
+                      />
+                    ) : (
+                      <img
+                        src={
+                          imageUrl + profile?.profile_image?.image_medium_path
+                        }
+                        alt='Profile'
+                        className='w-full h-full object-cover'
+                      />
+                    )
+                  ) : (
+                    <div className='text-3xl font-semibold text-[#FF6B00]'>
+                      {formData.full_name.charAt(0) || "?"}
+                    </div>
+                  )}
                 </div>
+                <input
+                  type='file'
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept='image/*'
+                  className='hidden'
+                />
               </div>
               <div>
                 <h3 className='font-semibold text-[#1F1F1F] mb-2'>
                   Profile Picture
                 </h3>
-                <button
-                  type='button'
-                  className='px-4 py-2 text-sm font-medium text-[#FF6B00] hover:bg-[rgba(255,107,0,0.1)] rounded-lg transition-colors'
-                >
-                  Change Picture
-                </button>
+                <div className='gap-4 flex'>
+                  <button
+                    type='button'
+                    onClick={triggerFileInput}
+                    className='px-4 py-2 text-sm font-medium text-[#FF6B00] bg-[rgba(255,107,0,0.1)] rounded-lg transition-colors'
+                  >
+                    {profileImagePreview ||
+                    profile?.profile_image?.image_medium_path
+                      ? "Change Picture"
+                      : "Upload Picture"}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -97,82 +238,71 @@ const EditProfile = () => {
                 </label>
                 <Input
                   readOnly={!isEditing}
-                  name='fullName'
-                  value={formData.fullName}
+                  name='full_name'
+                  value={formData.full_name}
                   onChange={handleChange}
                   placeholder='Enter your full name'
                 />
               </div>
 
-              {/* Email */}
+              {/* Email (Read Only) */}
               <div>
                 <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
                   Email Address
                 </label>
                 <Input
-                  readOnly={!isEditing}
+                  readOnly={true}
                   name='email'
                   type='email'
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder='Enter your email'
+                  value={profile?.email || ""}
+                  placeholder='Email cannot be changed'
+                  className='bg-gray-50 cursor-not-allowed'
                 />
               </div>
 
-              {/* Password Section - Only show when editing */}
-              {isEditing && (
-                <>
-                  <div className='pt-4 border-t border-gray-100'>
-                    <h3 className='text-lg font-semibold text-[#1F1F1F] mb-4'>
-                      Change Password
-                    </h3>
+              {/* Company Name */}
+              <div>
+                <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
+                  Company Name
+                </label>
+                <Input
+                  readOnly={!isEditing}
+                  name='company_name'
+                  value={formData.company_name}
+                  onChange={handleChange}
+                  placeholder='Enter your company name'
+                />
+              </div>
 
-                    <div className='space-y-4'>
-                      <div>
-                        <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
-                          Current Password
-                        </label>
-                        <Input
-                          name='currentPassword'
-                          type='password'
-                          value={formData.currentPassword}
-                          onChange={handleChange}
-                          placeholder='Enter current password'
-                          isPassword
-                        />
-                      </div>
+              {/* Phone Number */}
+              <div>
+                <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
+                  Phone Number
+                </label>
+                <Input
+                  readOnly={!isEditing}
+                  name='phone_number'
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  placeholder='Enter your phone number'
+                />
+              </div>
 
-                      <div>
-                        <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
-                          New Password
-                        </label>
-                        <Input
-                          name='newPassword'
-                          type='password'
-                          value={formData.newPassword}
-                          onChange={handleChange}
-                          placeholder='Enter new password'
-                          isPassword
-                        />
-                      </div>
-
-                      <div>
-                        <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
-                          Confirm New Password
-                        </label>
-                        <Input
-                          name='confirmPassword'
-                          type='password'
-                          value={formData.confirmPassword}
-                          onChange={handleChange}
-                          placeholder='Confirm new password'
-                          isPassword
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+              {/* Bio */}
+              <div>
+                <label className='block text-sm font-medium text-[#1F1F1F] mb-2'>
+                  Bio
+                </label>
+                <textarea
+                  readOnly={!isEditing}
+                  name='bio'
+                  value={formData.bio || ""}
+                  onChange={handleChange}
+                  placeholder='Tell us about yourself'
+                  className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent disabled:bg-gray-50'
+                  rows={3}
+                />
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -181,7 +311,7 @@ const EditProfile = () => {
                 <button
                   type='button'
                   onClick={() => setIsEditing(true)}
-                  className='h-10 px-6  bg-[#FF6B00] text-white font-medium rounded-lg '
+                  className='h-10 px-6 bg-[#FF6B00] text-white font-medium rounded-lg hover:bg-[#E55A00] transition-colors'
                 >
                   Edit Profile
                 </button>
@@ -190,9 +320,7 @@ const EditProfile = () => {
                   <button
                     type='submit'
                     disabled={loading}
-                    className='
-                    h-10
-                    px-6  bg-[#FF6B00] text-white font-medium rounded-lg hover:bg-[#E55A00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center'
+                    className='h-10 px-6 bg-[#FF6B00] text-white font-medium rounded-lg hover:bg-[#E55A00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center'
                   >
                     {loading ? (
                       <>
@@ -227,7 +355,7 @@ const EditProfile = () => {
                     type='button'
                     onClick={handleCancel}
                     disabled={loading}
-                    className='h-10 px-6  border border-gray-300 text-[#1F1F1F] font-medium rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed items-center justify-center'
+                    className='h-10 px-6 border border-gray-300 text-[#1F1F1F] font-medium rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
                   >
                     Cancel
                   </button>
@@ -245,21 +373,13 @@ const EditProfile = () => {
                     console.log("Account deletion requested");
                   }
                 }}
-                className='h-10 px-6  text-[#FF6B00] font-medium rounded-lg hover:bg-[rgba(255,107,0,0.1)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 sm:ml-auto'
+                className='h-10 px-6 text-[#FF6B00] font-medium rounded-lg hover:bg-[rgba(255,107,0,0.1)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 sm:ml-auto'
               >
                 Delete Account
               </button>
             </div>
           </form>
         </div>
-
-        {/* Info Note */}
-        {/* <div className='mt-6 p-4 bg-[rgba(255,107,0,0.1)] rounded-lg'>
-          <p className='text-sm text-[#7B7B7B]'>
-            <span className='font-medium text-[#FF6B00]'>Note:</span> Some
-            information may take up to 24 hours to update across all systems.
-          </p>
-        </div> */}
       </div>
     </div>
   );

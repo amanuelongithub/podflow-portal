@@ -3,12 +3,12 @@ import { theme } from "../../core/theme.js";
 import Button from "../../shared/components/Button.tsx";
 import Input from "../../shared/components/Input.tsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../shared/services/auth.tsx";
+import { useAuthStore } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast";
 import { homeRoute, loginRoute } from "../../core/routes.ts";
 
 const Register = () => {
-  const { register, isLoading, isError, errorMessage } = useAuth();
+  const { register, isLoading, isError, errorMessage } = useAuthStore();
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
@@ -28,7 +28,7 @@ const Register = () => {
       error("Passwords do not match!");
       return;
     }
-    full_name = firstName + lastName;
+    full_name = firstName + " " + lastName;
     const user = {
       full_name,
       company_name,
@@ -42,7 +42,7 @@ const Register = () => {
       error(errorMessage);
     } else if (data) {
       success("Registered successfully!");
-      navigate(homeRoute); 
+      navigate(homeRoute);
     }
   };
 

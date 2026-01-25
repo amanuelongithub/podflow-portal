@@ -15,16 +15,15 @@ type SidebarProps = {
   onMenuSelect: (index: number) => void;
 };
 
-const Sidebar: FC<SidebarProps> = ({ 
-  open, 
-  onclose, 
-  menus, 
+const AdminSidebar: FC<SidebarProps> = ({
+  open,
+  onclose,
+  menus,
   selectedMenuIndex,
-  onMenuSelect 
+  onMenuSelect,
 }) => {
-  
   const handleProfilePress = () => {
-     onMenuSelect(4); // Assuming EditProfile is index 4
+    onMenuSelect(4); // Assuming EditProfile is index 4
   };
 
   return (
@@ -55,12 +54,14 @@ const Sidebar: FC<SidebarProps> = ({
                 <button
                   onClick={() => onMenuSelect(menu.index)}
                   style={{
-                    color: selectedMenuIndex === menu.index 
-                      ? theme.colors.primary 
-                      : theme.colors.textcolor,
-                    background: selectedMenuIndex === menu.index 
-                      ? theme.colors.accent 
-                      : "transparent",
+                    color:
+                      selectedMenuIndex === menu.index
+                        ? theme.colors.primary
+                        : theme.colors.textcolor,
+                    background:
+                      selectedMenuIndex === menu.index
+                        ? theme.colors.accent
+                        : "transparent",
                   }}
                   className='w-full text-left px-4 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors'
                 >
@@ -71,15 +72,12 @@ const Sidebar: FC<SidebarProps> = ({
           </ul>
         </nav>
 
-        {/* Updated ProfileCard usage with custom props */}
-        <div className="absolute bottom-0 w-full">
-          <ProfileCard 
-            onPress={handleProfilePress}
-          />
+        <div className='absolute bottom-0 w-full'>
+          <ProfileCard onPress={handleProfilePress} />
         </div>
       </div>
     </>
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;
