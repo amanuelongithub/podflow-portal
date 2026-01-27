@@ -39,7 +39,6 @@ function CreatorDashboard() {
   const { error } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (isError && errorMessage) {

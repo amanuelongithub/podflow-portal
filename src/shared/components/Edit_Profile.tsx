@@ -53,8 +53,8 @@ const EditProfile = () => {
         phone_number: profile?.phone_number || "",
         bio: profile?.bio || "",
       });
-      if (profile?.profile_image?.image_medium_path) {
-        setProfileImagePreview(profile.profile_image.image_medium_path);
+      if (profile?.profile_image) {
+        setProfileImagePreview(profile.profile_image);
       }
     }
   }, [profile]);
@@ -144,8 +144,8 @@ const EditProfile = () => {
         bio: profile?.bio || "",
       });
       setProfileImage(null);
-      if (profile?.profile_image?.image_medium_path) {
-        setProfileImagePreview(profile.profile_image.image_medium_path);
+      if (profile?.profile_image) {
+        setProfileImagePreview(profile.profile_image);
       } else {
         setProfileImagePreview("");
       }
@@ -180,7 +180,7 @@ const EditProfile = () => {
             <div className='flex items-center gap-6 mb-8 pb-8 border-b border-gray-100'>
               <div className='relative'>
                 <div className='w-20 h-20 rounded-full overflow-hidden bg-[rgba(255,107,0,0.1)] flex items-center justify-center'>
-                  {profileImage || profile?.profile_image?.image_medium_path ? (
+                  {profileImage || profile?.profile_image ? (
                     profileImage ? (
                       <img
                         src={profileImagePreview}
@@ -189,9 +189,7 @@ const EditProfile = () => {
                       />
                     ) : (
                       <img
-                        src={
-                          imageUrl + profile?.profile_image?.image_medium_path
-                        }
+                        src={imageUrl + profile?.profile_image}
                         alt='Profile'
                         className='w-full h-full object-cover'
                       />
@@ -220,8 +218,7 @@ const EditProfile = () => {
                     onClick={triggerFileInput}
                     className='px-4 py-2 text-sm font-medium text-[#FF6B00] bg-[rgba(255,107,0,0.1)] rounded-lg transition-colors'
                   >
-                    {profileImagePreview ||
-                    profile?.profile_image?.image_medium_path
+                    {profileImagePreview || profile?.profile_image
                       ? "Change Picture"
                       : "Upload Picture"}
                   </button>

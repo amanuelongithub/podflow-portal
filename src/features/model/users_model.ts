@@ -2,19 +2,13 @@
 
 import { PageMetadata } from "./page";
 
-export interface ProfileImage {
-  image_small_path: string;
-  image_medium_path: string;
-  image_large_path: string;
-}
-
 export interface IUser {
   id: number;
   email: string;
   full_name: string;
   company_name?: string | null;
   phone_number?: string | null;
-  profile_image?: ProfileImage | null;
+  profile_image?: string | null;
   bio?: string | null;
   role_id: number;
   email_verified: boolean;
@@ -27,7 +21,7 @@ export class User implements IUser {
   full_name: string;
   company_name?: string | null;
   phone_number?: string | null;
-  profile_image?: ProfileImage | null;
+  profile_image?: string | null;
   bio?: string | null;
   role_id: number;
   email_verified: boolean;

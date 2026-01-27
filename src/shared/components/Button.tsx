@@ -2,6 +2,7 @@ import { FC, ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   color?: "primary" | "secondary" | "accent";
+  fullWidth?: boolean;
   children?: ReactNode;
 }
 
@@ -11,6 +12,7 @@ const Button: FC<ButtonProps> = ({
   onClick,
   type = "button",
   disabled,
+  fullWidth = true,
   className = "",
   ...props
 }) => {
@@ -20,7 +22,7 @@ const Button: FC<ButtonProps> = ({
       disabled={disabled}
       onClick={onClick}
       className={`
-        w-full
+       ${fullWidth ? "w-full" : "w-auto"}
         h-10
         px-4
         rounded-lg

@@ -81,7 +81,7 @@ const ProfileCard = ({ onPress }: ProfileCardProps) => {
           onClick={onPress}
         >
           <img
-            src={imageUrl + profile.profile_image?.image_medium_path}
+            src={imageUrl + profile.profile_image}
             alt='Profile'
             className='h-10 w-10 rounded-full object-cover flex-shrink-0'
             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {

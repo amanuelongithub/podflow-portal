@@ -1,13 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { theme } from "../../../core/theme.js";
-import { FaPlay, FaPause } from "react-icons/fa";
+// import { FaPlay, FaPause } from "react-icons/fa";
+import { imageUrl } from "../../../core/config.ts";
 
 type PodcastCardProps = {
-  image: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  audioSrc: string;
+  image: string | null;
+  title: string | null;
+  description: string | null;
+  createdAt: string | null;
+  audioSrc: string | null;
 };
 
 const PodcastCard: React.FC<PodcastCardProps> = ({
@@ -15,67 +16,13 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
   title,
   description,
   createdAt,
-  audioSrc,
 }) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-
-  const handlePlay = () => {
-    if (!audioRef.current) return;
-    audioRef.current.paused
-      ? audioRef.current.play()
-      : audioRef.current.pause();
-    setIsPlaying(!audioRef.current.paused);
-  };
-
-  const handleTimeUpdate = () => {
-    if (!audioRef.current) return;
-    setCurrentTime(audioRef.current.currentTime);
-    setProgress((audioRef.current.currentTime / duration) * 100);
-  };
-
-  const handleLoadedMetadata = () => {
-    if (!audioRef.current) return;
-    setDuration(audioRef.current.duration);
-  };
-
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const percentage = (e.clientX - rect.left) / rect.width;
-    const newTime = percentage * duration;
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-    setProgress(percentage * 100);
-  };
-
-  const formatTime = (time: number) =>
-    `${Math.floor(time / 60)}:${Math.floor(time % 60)
-      .toString()
-      .padStart(2, "0")}`;
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-    audio.addEventListener("ended", () => setIsPlaying(false));
-    return () => {
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      audio.removeEventListener("ended", () => setIsPlaying(false));
-    };
-  }, [duration]);
-
   return (
     <div
       style={{
         background: theme.colors.surface,
         borderRadius: theme.radius.large,
-        width: "380px",
+        width: "350px",
         fontFamily: theme.typography.fontFamily,
         overflow: "hidden",
         border: `1px solid ${theme.colors.accent}`,
@@ -83,8 +30,8 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
     >
       <div style={{ position: "relative" }}>
         <img
-          src={image}
-          alt={title}
+          src={imageUrl + image!}
+          alt={title!}
           style={{
             width: "100%",
             height: "200px",
@@ -92,17 +39,6 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
             // borderRadius: theme.radius.medium,
           }}
         />
-        {/* <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: `linear-gradient(to bottom, transparent 60%, ${theme.colors.surface} 100%)`,
-            borderRadius: theme.radius.medium,
-          }}
-        /> */}
       </div>
 
       <div style={{ padding: theme.spacing.medium }}>
@@ -319,8 +255,6 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
           </div>
         </div>
       </div>
-
-      <audio ref={audioRef} src={audioSrc} preload='metadata' />
     </div>
   );
 };

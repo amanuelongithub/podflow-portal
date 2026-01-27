@@ -81,6 +81,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     try {
       const storedToken = JSON.parse(localStorage.getItem("token") || "{}");
+      console.log("Stored token for refresh:", storedToken);
       const currentAccessToken = storedToken?.access_token;
       const refreshTokenValue = storedToken?.refresh_token;
 
