@@ -12,7 +12,7 @@ import CreatorDashboard from "./features/creator/Creator_Dashboard.tsx";
 import {
   creatorRoute,
   forgotpasswordRoute,
-  homeRoute,
+  // loginRoute,
   loginRoute,
   registerRoute,
   unAuthorizedRoute,
@@ -28,7 +28,7 @@ function App() {
         <Routes>
           {/* PersistAuth handles token checks and redirects */}
           <Route element={<PersistAuth />}>
-            <Route path={homeRoute} element={<Login />} />
+            {/* <Route path={loginRoute} element={<Login />} /> */}
             <Route path={loginRoute} element={<Login />} />
             <Route path={registerRoute} element={<Register />} />
             <Route path={forgotpasswordRoute} element={<ForgotPassword />} />

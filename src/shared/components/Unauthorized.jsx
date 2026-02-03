@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { FiAlertCircle } from "react-icons/fi";
 import { BiLogOutCircle } from "react-icons/bi";
 import { theme } from "../../core/theme";
-import { homeRoute } from  "../../core/routes.ts";
+import { loginRoute } from "../../core/routes.ts";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const Unauthorized = () => {
           <button
             onClick={() => {
               localStorage.removeItem("token");
-              navigate(homeRoute, { replace: true });
+              navigate(loginRoute, { replace: true });
             }}
             className='flex items-center gap-2 px-4 h-10
                border border-gray-200 hover:bg-gray-100 transition'

@@ -6,7 +6,7 @@ import { useAuthStore } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Input from "../../shared/components/Input.tsx";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { homeRoute } from  "../../core/routes.ts";
+import { loginRoute } from  "../../core/routes.ts";
 
 const ForgotPassword = () => {
   const { login, isLoading, errorMessage } = useAuthStore();
@@ -28,7 +28,7 @@ const ForgotPassword = () => {
         error(errorMessage || "Login failed");
       } else {
         success("Login successfully!");
-        navigate(homeRoute);
+        navigate(loginRoute);
       }
     } catch (err) {
       console.log("Login exception:", err);

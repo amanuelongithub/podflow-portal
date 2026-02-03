@@ -5,7 +5,7 @@ import Input from "../../shared/components/Input.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../shared/services/auth.tsx";
 import { useToast } from "../../shared/components/Toast";
-import { homeRoute, loginRoute } from "../../core/routes.ts";
+import { loginRoute } from "../../core/routes.ts";
 
 const Register = () => {
   const { register, isLoading, isError, errorMessage } = useAuthStore();
@@ -42,23 +42,9 @@ const Register = () => {
       error(errorMessage);
     } else if (data) {
       success("Registered successfully!");
-      navigate(homeRoute);
+      navigate(loginRoute);
     }
   };
-
-  // const handleAutoFill = (e) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   setFirstName("John");
-  //   setLastName("Doe");
-  //   setFullName("John Doe");
-  //   setCompanyName("Acme Corp");
-  //   setEmail("john.doe@example.com");
-  //   setPhone("1234567890");
-  //   setPassword("password123");
-  //   setConfirmPassword("password123");
-  // };
 
   return (
     <div

@@ -76,7 +76,7 @@ function UsersSettingsPage() {
         <div className='flex items-center'>
           {user.profile_image != null ? (
             <img
-              src={imageUrl + user.profile_image.image_medium_path}
+              src={imageUrl + user.profile_image}
               alt={user.full_name}
               className='h-8 w-8 rounded-full mr-3'
             />

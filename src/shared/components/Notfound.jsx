@@ -2,10 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { FiAlertCircle } from "react-icons/fi";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { theme } from "../../core/theme";
-import {
-  homeRoute,
-} from  "../../core/routes.ts";
-
+import { loginRoute } from "../../core/routes.ts";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -51,7 +48,7 @@ const NotFound = () => {
         </p>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <button
-            onClick={() => navigate(homeRoute, { replace: true })}
+            onClick={() => navigate(loginRoute, { replace: true })}
             className='flex items-center gap-2 px-4 h-10
                border border-gray-200 hover:bg-gray-100 transition'
             style={{ borderRadius: "10px" }}

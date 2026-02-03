@@ -89,6 +89,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return currentAccessToken;
       }
 
+      if (!refreshTokenValue) {
+        return;
+      }
+
       const response = await api(refreshTokenValue).get(refreshUrl);
 
       if (response.status === 200) {

@@ -31,6 +31,13 @@ export interface PodcastResponse {
   organizer: PodcastOrganizer | null;
   category: PodcastCategory | null;
 }
+export interface PodcastRequest {
+  title: string;
+  description: string;
+  image_file: File;
+  audio_file: File;
+  category_id: string;
+}
 
 export interface PodcastModel {
   status: string | null;

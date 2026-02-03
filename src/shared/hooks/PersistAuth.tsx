@@ -69,7 +69,7 @@ import {
   adminRoute,
   creatorRoute,
   forgotpasswordRoute,
-  homeRoute,
+  // loginRoute,
   loginRoute,
   registerRoute,
   unAuthorizedRoute,
@@ -87,17 +87,16 @@ const PersistAuth = () => {
         const refreshToken = tokenObj?.refresh_token;
 
         const publicPaths = [
-          homeRoute,
           loginRoute,
           registerRoute,
           forgotpasswordRoute,
         ];
 
-        // logged in & token valid
+        console.log()
         if (refreshToken && !isTokenExpired(refreshToken)) {
           if (publicPaths.includes(location.pathname)) {
             const role = userRole(refreshToken);
-            console.log("User role detected:", role);            
+            console.log("User role detected:", role);
             if (role === "admin") {
               navigate(adminRoute, { replace: true });
             } else if (role === "creator") {
@@ -114,10 +113,10 @@ const PersistAuth = () => {
 
         // not logged in & protected route
         localStorage.removeItem("token");
-        navigate(homeRoute, { replace: true });
+        navigate(loginRoute, { replace: true });
       } catch {
         localStorage.removeItem("token");
-        navigate(homeRoute, { replace: true });
+        navigate(loginRoute, { replace: true });
       }
     };
 
