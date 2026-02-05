@@ -18,6 +18,7 @@ import {
   unAuthorizedRoute,
   adminRoute,
   editprofileRoute,
+  homeRoute,
 } from "./core/routes.ts";
 import EditProfile from "./shared/components/Edit_Profile.tsx";
 
@@ -28,7 +29,7 @@ function App() {
         <Routes>
           {/* PersistAuth handles token checks and redirects */}
           <Route element={<PersistAuth />}>
-            {/* <Route path={loginRoute} element={<Login />} /> */}
+            <Route path={homeRoute} element={<Login />} />
             <Route path={loginRoute} element={<Login />} />
             <Route path={registerRoute} element={<Register />} />
             <Route path={forgotpasswordRoute} element={<ForgotPassword />} />

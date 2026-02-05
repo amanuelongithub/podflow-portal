@@ -24,17 +24,33 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      error("Please fill in all fields");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      error("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      error("Password must be at least 6 characters");
+      return;
+    }
+
     const user = { email, password };
 
     try {
-      const data = await login(user);
+      const result = await login(user);
 
-      if (!data) {
-        console.log("Login error:", errorMessage);
-        console.log("token error:", data);
-        error(errorMessage || "Login failed");
+      if (!result.success) {
+        console.log("Login error:", result.error);
+        error(result.error || "Login failed");
       } else {
-        const role = userRole(data.access_token);
+        const role = userRole(result.token.access_token);
         if (role === "admin") {
           success("Login successfully!");
           navigate(adminRoute);

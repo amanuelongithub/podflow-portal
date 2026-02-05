@@ -9,7 +9,9 @@ interface AuthState {
   isError: boolean;
   errorMessage: string;
   register: (user: Record<string, any>) => Promise<any>;
-  login: (user: Record<string, any>) => Promise<string | undefined>;
+  login: (
+    user: Record<string, any>,
+  ) => Promise<{ success: boolean; token?: string; error?: string }>;
   refreshToken: () => Promise<string | null>;
   isTokenExpired: (token: string) => boolean;
 }
@@ -57,20 +59,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (response.status === 200) {
         const tokenData = response.data.token;
         localStorage.setItem("token", JSON.stringify(tokenData));
-        return tokenData;
+        return { success: true, token: tokenData };
       } else {
+        const errorMsg = response.data?.error || "Something went wrong";
         set({
           isError: true,
-          errorMessage: response.data?.error || "Something went wrong",
+          errorMessage: errorMsg,
         });
+        return { success: false, error: errorMsg };
       }
     } catch (error) {
+      const errorMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Something went wrong"
+        : "Network error";
       set({
         isError: true,
-        errorMessage: axios.isAxiosError(error)
-          ? error.response?.data?.error || "Something went wrong"
-          : "Network error",
+        errorMessage: errorMsg,
       });
+      return { success: false, error: errorMsg };
     } finally {
       set({ isLoading: false });
     }
