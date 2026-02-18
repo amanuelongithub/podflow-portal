@@ -102,9 +102,10 @@ export const podcastController = create<PodcastState>((set, get) => ({
 
     try {
       const { refreshToken } = useAuthStore.getState();
-      const token = (await refreshToken()) ?? null;
+      const accessToken = (await refreshToken()) ?? null;
 
-      if (!token) {
+      if (!accessToken) {
+        console.log()
         set({
           unAuthorized: true,
           errorMessage: "No access token available",
@@ -126,7 +127,7 @@ export const podcastController = create<PodcastState>((set, get) => ({
         formData.append("image_file", payload.image_file);
       }
 
-      const response = await api(token).post(createPodcastUrl, formData);
+      const response = await api(accessToken).post(createPodcastUrl, formData);
 
       if (response.status === 201 || response.status === 200) {
         const successMessage = response.data?.message;

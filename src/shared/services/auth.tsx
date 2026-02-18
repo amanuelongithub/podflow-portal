@@ -87,7 +87,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     try {
       const storedToken = JSON.parse(localStorage.getItem("token") || "{}");
-      console.log("Stored token for refresh:", storedToken);
       const currentAccessToken = storedToken?.access_token;
       const refreshTokenValue = storedToken?.refresh_token;
 
@@ -102,6 +101,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await api(refreshTokenValue).get(refreshUrl);
 
       if (response.status === 200) {
+      console.log("Access token refreshed:", response.data);
         const { access_token, refresh_token } = response.data;
         localStorage.setItem(
           "token",

@@ -34,15 +34,11 @@ function UsersSettingsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     fetchUsers();
   }, []);
 
   useEffect(() => {
     if (isError && errorMessage) {
-      console.log("is Error:", isError);
-      console.log("Error Message:", errorMessage);
-
       if (
         errorMessage === "Invalid or expired token" ||
         errorMessage === "No access token available"

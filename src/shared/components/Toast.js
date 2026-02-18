@@ -25,45 +25,71 @@ export const ToastProvider = ({ children }) => {
     }
   }, [toasts]);
 
-  const showToast = (message, type = TOAST_TYPES.INFO, duration = 5000) => {
-    const id = Date.now();
-    const newToast = { id, message, type, duration };
-    setToasts((prev) => [...prev, newToast]);
-
-    // Auto remove after duration
-    setTimeout(() => {
-      removeToast(id);
-    }, duration);
-
-    return id;
-  };
-
-  const removeToast = (id) => {
+  const removeToast = React.useCallback((id) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+  }, []);
 
-  const success = (message, duration) => {
-    return showToast(message, TOAST_TYPES.SUCCESS, duration);
-  };
+  const showToast = React.useCallback(
+    (message, type = TOAST_TYPES.INFO, duration = 5000) => {
+      const id = Date.now();
+      const newToast = { id, message, type, duration };
+      setToasts((prev) => [...prev, newToast]);
 
-  const error = (message, duration) => {
-    return showToast(message, TOAST_TYPES.ERROR, duration);
-  };
+      // Auto remove after duration
+      setTimeout(() => {
+        removeToast(id);
+      }, duration);
 
-  const warning = (message, duration) => {
-    return showToast(message, TOAST_TYPES.WARNING, duration);
-  };
+      return id;
+    },
+    [removeToast],
+  );
 
-  const info = (message, duration) => {
-    return showToast(message, TOAST_TYPES.INFO, duration);
-  };
+  const success = React.useCallback(
+    (message, duration) => {
+      return showToast(message, TOAST_TYPES.SUCCESS, duration);
+    },
+    [showToast],
+  );
 
-  const clearAll = () => {
+  const error = React.useCallback(
+    (message, duration) => {
+      return showToast(message, TOAST_TYPES.ERROR, duration);
+    },
+    [showToast],
+  );
+
+  const warning = React.useCallback(
+    (message, duration) => {
+      return showToast(message, TOAST_TYPES.WARNING, duration);
+    },
+    [showToast],
+  );
+
+  const info = React.useCallback(
+    (message, duration) => {
+      return showToast(message, TOAST_TYPES.INFO, duration);
+    },
+    [showToast],
+  );
+
+  const clearAll = React.useCallback(() => {
     setToasts([]);
-  };
+  }, []);
+
+  const contextValue = React.useMemo(
+    () => ({
+      success,
+      error,
+      warning,
+      info,
+      clearAll,
+    }),
+    [success, error, warning, info, clearAll],
+  );
 
   return (
-    <ToastContext.Provider value={{ success, error, warning, info, clearAll }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </ToastContext.Provider>

@@ -36,13 +36,12 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
             width: "100%",
             height: "200px",
             objectFit: "cover",
-            // borderRadius: theme.radius.medium,
           }}
         />
       </div>
 
       <div style={{ padding: theme.spacing.medium }}>
-        <div style={{ marginTop: theme.spacing.medium }}>
+        <div>
           <div
             style={{
               display: "flex",

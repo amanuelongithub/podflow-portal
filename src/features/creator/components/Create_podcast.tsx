@@ -4,6 +4,8 @@ import Button from "../../../shared/components/Button.tsx";
 import { podcastController } from "../../creator/controller/podcast_controller.tsx";
 import { useToast } from "../../../shared/components/Toast.js";
 import { PodcastRequest } from "../model/podcast_model.ts";
+import { useNavigate } from "react-router-dom";
+import { loginRoute } from "../../../core/routes.ts";
 
 type Props = {
   open: boolean;
@@ -11,9 +13,10 @@ type Props = {
 };
 
 const CreatePodcastModal: React.FC<Props> = ({ open, onClose }) => {
-  const { createPodcast, isLoading, isError, errorMessage } =
+  const { createPodcast, isLoading } =
     podcastController();
   const { success, error } = useToast();
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -52,9 +55,15 @@ const CreatePodcastModal: React.FC<Props> = ({ open, onClose }) => {
     await createPodcast(podcast);
     console.log("Podcast data created");
 
-    if (isError === true) {
-      error(errorMessage && isLoading === false);
-    } else {
+    const state = podcastController.getState();
+
+    if (state.isError) {
+      error(state.errorMessage);
+    } else if (state.unAuthorized) {
+      error(state.errorMessage);
+      navigate(loginRoute, { replace: true });
+    }     
+    else {
       success("Podcast created successfully");
       setTitle("");
       setDescription("");
