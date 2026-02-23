@@ -95,6 +95,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       if (!refreshTokenValue) {
+        console.log("No refresh token found");
         return;
       }
 
@@ -135,5 +136,5 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch {
       return true;
     }
-  },
+  },  
 }));
