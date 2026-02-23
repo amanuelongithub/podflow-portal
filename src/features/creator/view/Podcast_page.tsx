@@ -70,6 +70,7 @@ const PodcastPage = () => {
               description={podcast.description}
               createdAt={new Date(podcast.created_at!).toLocaleDateString()}
               audioSrc={podcast.audio_url}
+              category={podcast.category?.name}
             />
           ))}
         </div>

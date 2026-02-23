@@ -9,6 +9,7 @@ type PodcastCardProps = {
   description: string | null;
   createdAt: string | null;
   audioSrc: string | null;
+  category?: string | null;
 };
 
 const PodcastCard: React.FC<PodcastCardProps> = ({
@@ -16,6 +17,7 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
   title,
   description,
   createdAt,
+  category,
 }) => {
   return (
     <div
@@ -216,41 +218,19 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
               flexWrap: "wrap",
             }}
           >
-            <span
-              style={{
-                fontSize: theme.typography.fontSizes.small,
-                color: theme.colors.primary,
-                background: theme.colors.accent,
-                padding: "2px 8px",
-                borderRadius: theme.radius.small,
-              }}
-            >
-              Technology
-            </span>
-            <span
-              style={{
-                fontSize: theme.typography.fontSizes.small,
-
-                color: theme.colors.primary,
-                background: theme.colors.accent,
-                padding: "2px 8px",
-                borderRadius: theme.radius.small,
-              }}
-            >
-              Education
-            </span>
-            <span
-              style={{
-                fontSize: theme.typography.fontSizes.small,
-
-                color: theme.colors.primary,
-                background: theme.colors.accent,
-                padding: "2px 8px",
-                borderRadius: theme.radius.small,
-              }}
-            >
-              Trending
-            </span>
+            {category && (
+              <span
+                style={{
+                  fontSize: theme.typography.fontSizes.small,
+                  color: theme.colors.primary,
+                  background: theme.colors.accent,
+                  padding: "2px 8px",
+                  borderRadius: theme.radius.small,
+                }}
+              >
+                {category}
+              </span>
+            )}
           </div>
         </div>
       </div>
