@@ -12,6 +12,7 @@ interface UserState {
   unAuthorized: boolean;
   errorMessage: string;
   fetchUsers: () => Promise<void>;
+  clearUsers: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -20,6 +21,16 @@ export const useUserStore = create<UserState>((set) => ({
   isError: false,
   unAuthorized: false,
   errorMessage: "",
+
+  clearUsers: () => {
+    set({
+      users: undefined,
+      isLoading: false,
+      isError: false,
+      unAuthorized: false,
+      errorMessage: "",
+    });
+  },
 
   fetchUsers: async () => {
     set({

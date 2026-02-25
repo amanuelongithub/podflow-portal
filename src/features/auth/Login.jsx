@@ -4,8 +4,10 @@ import { theme } from "../../core/theme.js";
 import Button from "../../shared/components/Button.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../shared/services/auth.tsx";
+import { useUserStore } from "../../shared/services/users.tsx";
 import { useToast } from "../../shared/components/Toast.js";
 import Input from "../../shared/components/Input.tsx";
+import { useUserProfile } from "../../shared/services/profile.tsx";
 import { jwtDecode } from "jwt-decode";
 import {
   adminRoute,
@@ -16,6 +18,8 @@ import {
 } from "../../core/routes.ts";
 const Login = () => {
   const { login, isLoading, errorMessage } = useAuthStore();
+  const { clearProfile } = useUserProfile();
+  const { clearUsers } = useUserStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { success, error } = useToast();
@@ -50,6 +54,8 @@ const Login = () => {
         console.log("Login error:", result.error);
         error(result.error || "Login failed");
       } else {
+        clearProfile();
+        clearUsers();
         const role = userRole(result.token.access_token);
         if (role === "admin") {
           success("Login successfully!");

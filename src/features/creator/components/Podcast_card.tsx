@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { theme } from "../../../core/theme.js";
 // import { FaPlay, FaPause } from "react-icons/fa";
 import { imageUrl } from "../../../core/config.ts";
@@ -19,60 +19,97 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
   createdAt,
   category,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         background: theme.colors.surface,
-        borderRadius: theme.radius.large,
-        width: "350px",
+        borderRadius: "16px",
         fontFamily: theme.typography.fontFamily,
         overflow: "hidden",
         border: `1px solid ${theme.colors.accent}`,
+        boxShadow: isHovered
+          ? "0 12px 24px rgba(0, 0, 0, 0.12)"
+          : "0 4px 12px rgba(0, 0, 0, 0.05)",
+        transform: isHovered ? "translateY(-4px)" : "none",
+        transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
       }}
     >
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", overflow: "hidden" }}>
         <img
           src={imageUrl + image!}
           alt={title!}
           style={{
             width: "100%",
-            height: "200px",
+            height: "220px",
             objectFit: "cover",
+            transform: isHovered ? "scale(1.05)" : "scale(1)",
+            transition: "transform 0.5s ease",
+          }}
+        />
+        {/* Overlay gradient for better text readability if we add text on image later */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "40%",
+            background: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)",
+            pointerEvents: "none",
           }}
         />
       </div>
 
-      <div style={{ padding: theme.spacing.medium }}>
-        <div>
+      <div
+        style={{
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              marginBottom: theme.spacing.small,
+              marginBottom: "12px",
+              gap: "12px",
             }}
           >
             <h3
               style={{
                 color: theme.colors.secondary,
-                fontSize: theme.typography.fontSizes.medium,
-
-                fontWeight: theme.typography.headings.fontWeight,
+                fontSize: "18px",
+                fontWeight: 600,
                 margin: 0,
                 flex: 1,
+                lineHeight: 1.3,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                transition: "color 0.2s ease",
               }}
             >
               {title}
             </h3>
             <span
               style={{
-                color: theme.colors.primary,
-                fontSize: theme.typography.fontSizes.xsmalle,
-                fontWeight: 600,
-                backgroundColor: theme.colors.accent,
-                padding: "4px 10px",
-                borderRadius: theme.radius.small,
-                marginLeft: theme.spacing.small,
+                color: theme.colors.textcolor,
+                fontSize: "12px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+                marginTop: "4px",
               }}
             >
               {createdAt}
@@ -82,13 +119,14 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
           <p
             style={{
               color: theme.colors.textcolor,
-              fontSize: theme.typography.fontSizes.small,
-              lineHeight: "1.6",
-              marginBottom: theme.spacing.medium,
+              fontSize: "14px",
+              lineHeight: 1.6,
+              marginBottom: "20px",
               display: "-webkit-box",
-              WebkitLineClamp: 2,
+              WebkitLineClamp: 3,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              flex: 1,
             }}
           >
             {description}
@@ -213,24 +251,53 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
           <div
             style={{
               display: "flex",
-              gap: theme.spacing.small,
-              marginTop: theme.spacing.medium,
-              flexWrap: "wrap",
+              alignItems: "center",
+              marginTop: "auto",
+              paddingTop: "16px",
+              borderTop: `1px solid ${theme.colors.background}`,
             }}
           >
             {category && (
               <span
                 style={{
-                  fontSize: theme.typography.fontSizes.small,
+                  fontSize: "12px",
+                  fontWeight: 600,
                   color: theme.colors.primary,
                   background: theme.colors.accent,
-                  padding: "2px 8px",
-                  borderRadius: theme.radius.small,
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
                 }}
               >
                 {category}
               </span>
             )}
+            
+            <div 
+              style={{ 
+                marginLeft: "auto", 
+                display: "flex", 
+                alignItems: "center",
+                color: isHovered ? theme.colors.primary : theme.colors.textcolor,
+                fontSize: "13px",
+                fontWeight: 500,
+                transition: "color 0.2s ease",
+              }}
+            >
+              <span>Listen Now</span>
+              <svg 
+                style={{ 
+                  marginLeft: "4px",
+                  transform: isHovered ? "translateX(4px)" : "none",
+                  transition: "transform 0.2s ease"
+                }} 
+                width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
           </div>
         </div>
       </div>

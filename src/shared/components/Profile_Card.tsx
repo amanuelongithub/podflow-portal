@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserProfile } from "../services/profile.tsx";
+import { useUserStore } from "../services/users.tsx";
 import { IoMdMore } from "react-icons/io";
 import { FiLogOut, FiUser } from "react-icons/fi";
 import { loginRoute } from "../../core/routes.ts";
@@ -14,8 +15,9 @@ const ProfileCard = ({ onPress }: ProfileCardProps) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { fetchUserProfile, profile, isLoading, isError, errorMessage } =
+  const { fetchUserProfile, profile, isLoading, isError, errorMessage, clearProfile } =
     useUserProfile();
+  const { clearUsers } = useUserStore();
 
   // close menu when clicking outside
   useEffect(() => {
@@ -46,6 +48,8 @@ const ProfileCard = ({ onPress }: ProfileCardProps) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    clearProfile();
+    clearUsers();
     navigate(loginRoute, { replace: true });
   };
 

@@ -13,6 +13,7 @@ interface UserState {
   errorMessage: string;
   fetchUserProfile: () => Promise<void>;
   editUserProfile: (user: any) => Promise<void>;
+  clearProfile: () => void;
 }
 
 export const useUserProfile = create<UserState>((set, get) => ({
@@ -20,6 +21,15 @@ export const useUserProfile = create<UserState>((set, get) => ({
   isLoading: false,
   isError: false,
   errorMessage: "",
+
+  clearProfile: () => {
+    set({
+      profile: null,
+      isLoading: false,
+      isError: false,
+      errorMessage: "",
+    });
+  },
 
   fetchUserProfile: async () => {
     set({ isLoading: true, isError: false, errorMessage: "" });
