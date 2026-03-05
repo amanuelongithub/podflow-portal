@@ -119,6 +119,10 @@ export const podcastController = create<PodcastState>((set, get) => ({
       formData.append("description", payload.description);
       formData.append("category_id", payload.category_id);
 
+      if (payload.guest_name) {
+        formData.append("guest_name", payload.guest_name);
+      }
+
       if (payload.audio_file) {
         formData.append("audio_file", payload.audio_file);
       }

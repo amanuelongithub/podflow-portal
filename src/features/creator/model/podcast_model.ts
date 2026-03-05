@@ -37,6 +37,7 @@ export interface PodcastRequest {
   image_file: File;
   audio_file: File;
   category_id: string;
+  guest_name?: string;
 }
 
 export interface PodcastModel {
