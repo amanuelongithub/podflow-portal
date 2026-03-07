@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useEffect, useRef } from "react";
 import Input from "../../../shared/components/Input.tsx";
 import Button from "../../../shared/components/Button.tsx";
+import LoadingIndicator from "../../../shared/components/LoadingIndicator.tsx";
 import { podcastController } from "../../creator/controller/podcast_controller.tsx";
 import { useToast } from "../../../shared/components/Toast.js";
 import { PodcastRequest } from "../model/podcast_model.ts";
@@ -204,6 +205,7 @@ const CreatePodcastModal: React.FC<Props> = ({ open, onClose }) => {
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
+      {isLoading && <LoadingIndicator fullScreen={true} text="Creating podcast..." />}
       <div
         className='bg-white rounded-xl max-w-md w-full p-6 shadow-2xl flex flex-col max-h-[90vh]'
         onClick={(e) => e.stopPropagation()}
@@ -216,6 +218,7 @@ const CreatePodcastModal: React.FC<Props> = ({ open, onClose }) => {
           <button
             onClick={handleClose}
             className='text-gray-400 hover:text-gray-600 transition-colors'
+            disabled={isLoading}
           >
             <svg
               className='w-5 h-5'

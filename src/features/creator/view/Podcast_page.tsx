@@ -5,6 +5,7 @@ import { useToast } from "../../../shared/components/Toast.js";
 import { podcastController } from "../controller/podcast_controller.tsx";
 import { useNavigate } from "react-router-dom";
 import CreatePodcastModal from "../components/Create_podcast.tsx";
+import LoadingIndicator from "../../../shared/components/LoadingIndicator.tsx";
 
 const PodcastPage = () => {
   const { fetchPodcasts, podcasts, isLoading, isError, errorMessage } =
@@ -21,7 +22,7 @@ const PodcastPage = () => {
   }, [fetchPodcasts, podcasts]);
 
   if (isLoading) {
-    return <div>Loading podcasts...</div>;
+    return <LoadingIndicator fullScreen={true} text="Loading podcasts..." />;
   }
 
   if (isError) {
