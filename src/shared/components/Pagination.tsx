@@ -6,6 +6,7 @@ interface PaginationProps {
   totalItems: number;
   onPageChange: (page: number) => void;
   itemsPerPage?: number;
+  onItemsPerPageChange?: (size: number) => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -14,6 +15,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalItems,
   onPageChange,
   itemsPerPage = 10,
+  onItemsPerPageChange,
 }) => {
   return (
     <div className="bg-white border-t border-gray-200 p-4 flex items-center justify-between rounded-b-lg relative mx-4 mb-4 shadow-sm h-16 w-full max-w-full">
@@ -22,10 +24,13 @@ const Pagination: React.FC<PaginationProps> = ({
           <span className="text-sm text-gray-600">Items per page:</span>
           <select 
             className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-            defaultValue={itemsPerPage}
-            disabled // Currently fixed per API response
+            value={itemsPerPage}
+            onChange={(e) => onItemsPerPageChange && onItemsPerPageChange(Number(e.target.value))}
           >
-            <option value={itemsPerPage}>{itemsPerPage}</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
         </div>
 

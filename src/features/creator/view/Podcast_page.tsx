@@ -16,13 +16,14 @@ const PodcastPage = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   const { error } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchPodcasts(currentPage);
-  }, [fetchPodcasts, currentPage]);
+    fetchPodcasts(currentPage, itemsPerPage);
+  }, [fetchPodcasts, currentPage, itemsPerPage]);
 
   if (isLoading) {
     return <LoadingIndicator fullScreen={true} text="Loading podcasts..." />;
@@ -101,6 +102,11 @@ const PodcastPage = () => {
                 totalPages={podcasts!.page_metadata?.last_page || 1}
                 totalItems={podcasts!.page_metadata?.length || 0}
                 onPageChange={(page) => setCurrentPage(page)}
+                itemsPerPage={itemsPerPage}
+                onItemsPerPageChange={(size) => {
+                  setItemsPerPage(size);
+                  setCurrentPage(1);
+                }}
               />
             </div>
           </div>
@@ -111,6 +117,11 @@ const PodcastPage = () => {
             totalPages={podcasts!.page_metadata?.last_page || 1}
             totalItems={podcasts!.page_metadata?.length || 0}
             onPageChange={(page) => setCurrentPage(page)}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={(size) => {
+              setItemsPerPage(size);
+              setCurrentPage(1);
+            }}
           />
         )
       ) : (

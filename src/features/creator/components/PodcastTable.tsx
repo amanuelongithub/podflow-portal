@@ -13,6 +13,8 @@ interface PodcastTableProps {
   totalPages: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  itemsPerPage: number;
+  onItemsPerPageChange: (size: number) => void;
 }
 
 const PodcastTable: React.FC<PodcastTableProps> = ({ 
@@ -20,9 +22,10 @@ const PodcastTable: React.FC<PodcastTableProps> = ({
   currentPage, 
   totalPages, 
   totalItems, 
-  onPageChange 
+  onPageChange,
+  itemsPerPage,
+  onItemsPerPageChange
 }) => {
-  const itemsPerPage = 10; // Assuming 10 based on example response size = 10
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mt-4">
@@ -123,6 +126,8 @@ const PodcastTable: React.FC<PodcastTableProps> = ({
         totalPages={totalPages}
         totalItems={totalItems}
         onPageChange={onPageChange}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={onItemsPerPageChange}
       />
     </div>
   );
