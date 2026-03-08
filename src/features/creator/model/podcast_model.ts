@@ -11,7 +11,7 @@ export interface ImageData {
 export interface PodcastOrganizer {
   organizer_id: number | null;
   organizer_name: string | null;
-  profile_image: ImageData | null;
+  profile_image: string | null;
 }
 
 export interface PodcastCategory {
@@ -28,6 +28,10 @@ export interface PodcastResponse {
   category_id: number | null;
   created_at: string | null;
   updated_at: string | null;
+  guest_name: string | null;
+  like_count: number | null;
+  comment_count: number | null;
+  is_published: boolean | null;
   organizer: PodcastOrganizer | null;
   category: PodcastCategory | null;
 }
@@ -70,21 +74,15 @@ export class PodcastModel {
             category_id: item.category_id || null,
             created_at: item.created_at || null,
             updated_at: item.updated_at || null,
+            guest_name: item.guest_name || null,
+            like_count: item.like_count || 0,
+            comment_count: item.comment_count || 0,
+            is_published: item.is_published ?? null,
             organizer: item.organizer
               ? {
                   organizer_id: item.organizer.organizer_id || null,
                   organizer_name: item.organizer.organizer_name || null,
-                  profile_image: item.organizer.profile_image
-                    ? {
-                        image_small_path:
-                          item.organizer.profile_image.image_small_path || null,
-                        image_medium_path:
-                          item.organizer.profile_image.image_medium_path ||
-                          null,
-                        image_large_path:
-                          item.organizer.profile_image.image_large_path || null,
-                      }
-                    : null,
+                  profile_image: item.organizer.profile_image || null,
                 }
               : null,
             category: item.category
@@ -121,20 +119,15 @@ export class PodcastModel {
         category_id: item.category_id,
         created_at: item.created_at,
         updated_at: item.updated_at,
+        guest_name: item.guest_name,
+        like_count: item.like_count,
+        comment_count: item.comment_count,
+        is_published: item.is_published,
         organizer: item.organizer
           ? {
               organizer_id: item.organizer.organizer_id,
               organizer_name: item.organizer.organizer_name,
-              profile_image: item.organizer.profile_image
-                ? {
-                    image_small_path:
-                      item.organizer.profile_image.image_small_path,
-                    image_medium_path:
-                      item.organizer.profile_image.image_medium_path,
-                    image_large_path:
-                      item.organizer.profile_image.image_large_path,
-                  }
-                : undefined,
+              profile_image: item.organizer.profile_image,
             }
           : undefined,
         category: item.category
@@ -179,6 +172,22 @@ export class PodcastModel {
         updates.updated_at !== undefined
           ? updates.updated_at
           : original.updated_at,
+      guest_name:
+        updates.guest_name !== undefined
+          ? updates.guest_name
+          : original.guest_name,
+      like_count:
+        updates.like_count !== undefined
+          ? updates.like_count
+          : original.like_count,
+      comment_count:
+        updates.comment_count !== undefined
+          ? updates.comment_count
+          : original.comment_count,
+      is_published:
+        updates.is_published !== undefined
+          ? updates.is_published
+          : original.is_published,
       organizer:
         updates.organizer !== undefined
           ? updates.organizer
@@ -207,6 +216,10 @@ export class PodcastModel {
       category_id: null,
       created_at: null,
       updated_at: null,
+      guest_name: null,
+      like_count: null,
+      comment_count: null,
+      is_published: null,
       organizer: null,
       category: null,
     };

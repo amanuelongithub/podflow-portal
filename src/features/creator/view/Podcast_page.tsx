@@ -6,11 +6,14 @@ import { podcastController } from "../controller/podcast_controller.tsx";
 import { useNavigate } from "react-router-dom";
 import CreatePodcastModal from "../components/Create_podcast.tsx";
 import LoadingIndicator from "../../../shared/components/LoadingIndicator.tsx";
+import PodcastTable from "../components/PodcastTable.tsx";
+import { HiOutlineViewGrid, HiOutlineViewList, HiPlus } from "react-icons/hi";
 
 const PodcastPage = () => {
   const { fetchPodcasts, podcasts, isLoading, isError, errorMessage } =
     podcastController();
   const [open, setOpen] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   const { error } = useToast();
   const navigate = useNavigate();
@@ -30,39 +33,55 @@ const PodcastPage = () => {
   }
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1 className='text-2xl font-bold'>My Podcasts</h1>
+    <div className="flex flex-col h-full bg-gray-50/50 -mx-6 -mt-6 p-6">
+      {/* Top Header */}
+      <div className="flex justify-between items-center mb-6">
+        {/* <button
+          onClick={() => setOpen(true)}
+          className="bg-[#2D3139] hover:bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-medium transition-colors"
+        >
+ */}
+        {/* </button> */}
 
         <Button
-          color='primary'
-          type='button'
-          fullWidth={false}
-          onClick={() => setOpen(true)}
+        onClick={() => setOpen(true)}
+        fullWidth={false}
         >
+          <HiPlus />
           Create Podcast
         </Button>
+
+        <div className="flex items-center gap-4 text-sm text-gray-500">
+          <span>List View</span>
+          <button 
+            onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+            className="p-1.5 hover:bg-gray-200 rounded text-gray-700 transition-colors"
+          >
+            {viewMode === 'list' ? <HiOutlineViewList size={20} /> : <HiOutlineViewGrid size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-gray-200 mb-6 pb-2 px-2 text-sm">
+        <button className="px-4 py-1.5 bg-[#2D3139] text-white rounded-md font-medium">All Events</button>
+        <button className="text-gray-500 hover:text-gray-800 font-medium">Shared Events</button>
+        <button className="text-gray-500 hover:text-gray-800 font-medium">Ongoing Events</button>
+        <button className="text-gray-500 hover:text-gray-800 font-medium">Upcoming Events</button>
+        <button className="text-gray-500 hover:text-gray-800 font-medium">Past Events</button>
       </div>
 
       <CreatePodcastModal open={open} onClose={() => setOpen(false)} />
 
-      {podcasts &&
-      podcasts!.page_metadata &&
-      podcasts!.page_metadata!.length > 0 ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-            gap: "20px",
-          }}
-        >
+      {podcasts && podcasts!.data && podcasts!.data!.length > 0 ? (
+        viewMode === "grid" ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+              gap: "20px",
+            }}
+          >
           {podcasts!.data!.map((podcast) => (
             <PodcastCard
               key={podcast.id}
@@ -74,9 +93,12 @@ const PodcastPage = () => {
               category={podcast.category?.name}
             />
           ))}
-        </div>
+          </div>
+        ) : (
+          <PodcastTable podcasts={podcasts!.data || []} />
+        )
       ) : (
-        <div>No podcasts found. Create your first podcast!</div>
+        <div className="text-center py-10 text-gray-500">No podcasts found. Create your first podcast!</div>
       )}
     </div>
   );
