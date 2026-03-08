@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CreatePodcastModal from "../components/Create_podcast.tsx";
 import LoadingIndicator from "../../../shared/components/LoadingIndicator.tsx";
 import PodcastTable from "../components/PodcastTable.tsx";
+import Pagination from "../../../shared/components/Pagination.tsx";
 import { HiOutlineViewGrid, HiOutlineViewList, HiPlus } from "react-icons/hi";
 
 const PodcastPage = () => {
@@ -14,15 +15,14 @@ const PodcastPage = () => {
     podcastController();
   const [open, setOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { error } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!podcasts || podcasts?.data?.length === 0) {
-      fetchPodcasts();
-    }
-  }, [fetchPodcasts, podcasts]);
+    fetchPodcasts(currentPage);
+  }, [fetchPodcasts, currentPage]);
 
   if (isLoading) {
     return <LoadingIndicator fullScreen={true} text="Loading podcasts..." />;
@@ -75,27 +75,43 @@ const PodcastPage = () => {
 
       {podcasts && podcasts!.data && podcasts!.data!.length > 0 ? (
         viewMode === "grid" ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-              gap: "20px",
-            }}
-          >
-          {podcasts!.data!.map((podcast) => (
-            <PodcastCard
-              key={podcast.id}
-              image={podcast.image_url}
-              title={podcast.title}
-              description={podcast.description}
-              createdAt={new Date(podcast.created_at!).toLocaleDateString()}
-              audioSrc={podcast.audio_url}
-              category={podcast.category?.name}
-            />
-          ))}
+          <div className="flex flex-col gap-6 w-full">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                gap: "20px",
+              }}
+            >
+            {podcasts!.data!.map((podcast) => (
+              <PodcastCard
+                key={podcast.id}
+                image={podcast.image_url}
+                title={podcast.title}
+                description={podcast.description}
+                createdAt={new Date(podcast.created_at!).toLocaleDateString()}
+                audioSrc={podcast.audio_url}
+                category={podcast.category?.name}
+              />
+            ))}
+            </div>
+            <div className="mt-4 pb-8">
+              <Pagination 
+                currentPage={podcasts!.page_metadata?.page || 1}
+                totalPages={podcasts!.page_metadata?.last_page || 1}
+                totalItems={podcasts!.page_metadata?.length || 0}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </div>
           </div>
         ) : (
-          <PodcastTable podcasts={podcasts!.data || []} />
+          <PodcastTable 
+            podcasts={podcasts!.data || []} 
+            currentPage={podcasts!.page_metadata?.page || 1}
+            totalPages={podcasts!.page_metadata?.last_page || 1}
+            totalItems={podcasts!.page_metadata?.length || 0}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         )
       ) : (
         <div className="text-center py-10 text-gray-500">No podcasts found. Create your first podcast!</div>

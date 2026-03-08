@@ -5,20 +5,24 @@ import { imageUrl } from "../../../core/config.ts";
 import { Link } from 'react-router-dom';
 import { HiOutlineDotsVertical, HiOutlineSearch, HiOutlineViewGrid, HiOutlineViewList } from 'react-icons/hi';
 import { BsDownload } from 'react-icons/bs';
+import Pagination from '../../../shared/components/Pagination.tsx';
 
 interface PodcastTableProps {
   podcasts: PodcastResponse[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
 }
 
-const PodcastTable: React.FC<PodcastTableProps> = ({ podcasts }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 25;
-  const totalPages = Math.ceil(podcasts.length / itemsPerPage);
-
-  const paginatedPodcasts = podcasts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+const PodcastTable: React.FC<PodcastTableProps> = ({ 
+  podcasts, 
+  currentPage, 
+  totalPages, 
+  totalItems, 
+  onPageChange 
+}) => {
+  const itemsPerPage = 10; // Assuming 10 based on example response size = 10
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mt-4">
@@ -65,7 +69,7 @@ const PodcastTable: React.FC<PodcastTableProps> = ({ podcasts }) => {
             </tr>
           </thead>
           <tbody>
-            {paginatedPodcasts.map((podcast, index) => (
+            {podcasts.map((podcast, index) => (
               <tr 
                 key={podcast.id} 
                 className={`border-b border-gray-100 hover:bg-gray-50 ${index % 2 !== 0 ? 'bg-gray-50/50' : 'bg-white'}`}
@@ -114,79 +118,12 @@ const PodcastTable: React.FC<PodcastTableProps> = ({ podcasts }) => {
         </table>
       </div>
 
-      {/* Pagination Container (matches image style) */}
-      <div className="bg-white border-t border-gray-200 p-4 flex items-center justify-between rounded-b-lg relative mx-4 mb-4 shadow-sm">
-        {/* Absolute positioning to stretch pagination bar similar to image */}
-        <div className="absolute inset-x-0 -bottom-2 h-16 bg-white rounded-lg shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 flex items-center justify-between px-6 z-10 mx-2">
-            
-            <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Items per page:</span>
-            <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-            </div>
-
-            <div className="flex items-center gap-1">
-            <button 
-                onClick={() => setCurrentPage(1)} 
-                disabled={currentPage === 1}
-                className="p-1 rounded text-gray-400 hover:bg-gray-100 disabled:opacity-50"
-            >
-                <span className="sr-only">First</span>
-                <span aria-hidden="true">|&lt;</span>
-            </button>
-            <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1}
-                className="p-1 rounded text-gray-400 hover:bg-gray-100 disabled:opacity-50"
-            >
-                <span className="sr-only">Previous</span>
-                <span aria-hidden="true">&lt;</span>
-            </button>
-            
-            <div className="flex items-center gap-1 mx-2">
-                {[...Array(Math.min(3, totalPages))].map((_, i) => (
-                <button
-                    key={i + 1}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentPage === i + 1 
-                        ? 'bg-gray-900 text-white' 
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                >
-                    {i + 1}
-                </button>
-                ))}
-            </div>
-
-            <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
-                disabled={currentPage === totalPages || totalPages === 0}
-                className="p-1 rounded text-gray-400 hover:bg-gray-100 disabled:opacity-50"
-            >
-                <span className="sr-only">Next</span>
-                <span aria-hidden="true">&gt;</span>
-            </button>
-            <button 
-                onClick={() => setCurrentPage(totalPages)} 
-                disabled={currentPage === totalPages || totalPages === 0}
-                className="p-1 rounded text-gray-400 hover:bg-gray-100 disabled:opacity-50"
-            >
-                <span className="sr-only">Last</span>
-                <span aria-hidden="true">&gt;|</span>
-            </button>
-            </div>
-
-            <div className="text-sm text-gray-600">
-            Total Records: {podcasts.length}
-            </div>
-        </div>
-      </div>
-      {/* Spacer to account for absolute elevated pagination bar */}
-      <div className="h-6"></div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };

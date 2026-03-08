@@ -13,7 +13,7 @@ interface PodcastState {
   isError: boolean;
   unAuthorized: boolean;
   errorMessage: string;
-  fetchPodcasts: () => Promise<void>;
+  fetchPodcasts: (page?: number) => Promise<void>;
   createPodcast: (payload: PodcastRequest) => Promise<void>;
   resetMessages: () => void;
 }
@@ -25,7 +25,7 @@ export const podcastController = create<PodcastState>((set, get) => ({
   unAuthorized: false,
   errorMessage: "",
 
-  fetchPodcasts: async () => {
+  fetchPodcasts: async (page: number = 1) => {
     set({
       isLoading: true,
       isError: false,
@@ -46,7 +46,7 @@ export const podcastController = create<PodcastState>((set, get) => ({
         return;
       }
 
-      const response = await api(token).get(getPodcastsUrl);
+      const response = await api(token).get(`${getPodcastsUrl}?page=${page}`);
 
       if (response.status === 200) {
         const podcastResponse = PodcastModel.fromRawJson(response.data);
